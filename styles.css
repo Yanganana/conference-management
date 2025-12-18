@@ -1,0 +1,1085 @@
+/* 全局样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 飞书字体 */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f7f8fa;
+  color: #1d2129;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 应用容器 */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* 飞书风格头部 */
+.header {
+  background: linear-gradient(90deg, #007aff 0%, #0056b3 100%);
+  color: white;
+  padding: 16px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* 主容器 */
+.container {
+  display: flex;
+  flex: 1;
+  background-color: #f7f8fa;
+}
+
+/* 飞书风格侧边栏 */
+.sidebar {
+  width: 220px;
+  background-color: #ffffff;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+  padding: 0;
+  border-right: 1px solid #e5e6eb;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 8px 0;
+}
+
+.sidebar li {
+  margin: 0;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: #4e5969;
+  border-radius: 0 20px 20px 0;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 400;
+  margin-right: 8px;
+}
+
+.sidebar a:hover {
+  background-color: #f0f7ff;
+  color: #007aff;
+}
+
+.sidebar a.active {
+  background-color: #e6f2ff;
+  color: #007aff;
+  font-weight: 500;
+}
+
+/* 主内容区域 */
+.content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  background-color: #f7f8fa;
+}
+
+/* 页面切换 */
+.page {
+  display: none;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.page.active {
+  display: block;
+}
+
+/* 飞书风格卡片 */
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #f0f2f5;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* 飞书风格按钮 */
+.button {
+  background-color: #007aff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.button:hover {
+  background-color: #0069e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.button:active {
+  background-color: #005ccc;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transform: translateY(0);
+}
+
+.button.secondary {
+  background-color: #f5f5f6;
+  color: #1d2129;
+  border: 1px solid #e5e6eb;
+}
+
+.button.secondary:hover {
+  background-color: #ebebef;
+  border-color: #d9d9d9;
+}
+
+.button.secondary:active {
+  background-color: #e0e2e6;
+}
+
+.button.danger {
+  background-color: #ff4d4f;
+}
+
+.button.danger:hover {
+  background-color: #ff7875;
+}
+
+/* 飞书风格表单组 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #1d2129;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e6eb;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background-color: white;
+  color: #1d2129;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #007aff;
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.12);
+  background-color: #f0f7ff;
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+  border-color: #c9ccd4;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* 飞书风格开关 */
+.switch-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #f5f5f6;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #e5e6eb;
+}
+
+.switch-label {
+  font-weight: 500;
+  color: #1d2129;
+  font-size: 14px;
+  margin: 0;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d1d5db;
+  transition: .3s ease;
+  border-radius: 24px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s ease;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+input:checked + .slider {
+  background-color: #007aff;
+  box-shadow: inset 0 1px 3px rgba(0, 122, 255, 0.3);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* 飞书风格议程添加区域 */
+.agenda-add-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 2fr auto;
+  gap: 12px;
+  align-items: end;
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  border: 1px dashed #e5e6eb;
+}
+
+/* 飞书风格提示信息 */
+.info-tip {
+  background-color: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 16px;
+  color: #0369a1;
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  box-shadow: 0 1px 3px rgba(0, 122, 255, 0.1);
+}
+
+/* 飞书风格参会人标签 */
+.attendee-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f0f9ff;
+  color: #0369a1;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #e6f0ff;
+  transition: all 0.2s ease;
+}
+
+.attendee-tag:hover {
+  background-color: #e6f0ff;
+  border-color: #bae6fd;
+}
+
+/* 飞书风格议程列表 */
+.agenda-list {
+  margin-top: 16px;
+}
+
+.agenda-item {
+  background-color: #fafafb;
+  border: 1px solid #e5e6eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.agenda-item:hover {
+  background-color: #f5f5f6;
+  border-color: #d9d9d9;
+}
+
+.agenda-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.agenda-item-title {
+  font-weight: 500;
+  color: #1d2129;
+  font-size: 14px;
+}
+
+.agenda-item-time {
+  color: #65676b;
+  font-size: 12px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.agenda-item-desc {
+  color: #65676b;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* 飞书风格标题 */
+h2 {
+  color: #1d2129;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f0f2f5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+h3 {
+  color: #1d2129;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  padding-left: 8px;
+  border-left: 4px solid #007aff;
+}
+
+h4 {
+  color: #1d2129;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+/* 表单行布局 */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* 统计卡片区域 */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stats-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  text-align: center;
+  border: 1px solid #f0f2f5;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #007aff 0%, #0056b3 100%);
+}
+
+.stats-card .number {
+  font-size: 32px;
+  font-weight: 700;
+  color: #007aff;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.stats-card .label {
+  color: #65676b;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* 时间线样式 */
+.timeline {
+  position: relative;
+  padding: 16px 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #e5e6eb;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 36px;
+  margin-bottom: 20px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #007aff;
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px #e6f0ff;
+}
+
+/* 会议网格 */
+.meetings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 16px;
+}
+
+/* 飞书风格表格 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+thead {
+  background-color: #fafafa;
+  border-bottom: 2px solid #f0f2f5;
+}
+
+th,
+td {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+th {
+  font-weight: 600;
+  color: #1d2129;
+  background-color: #fafafa;
+  white-space: nowrap;
+}
+
+td {
+  color: #4e5969;
+}
+
+tr:hover {
+  background-color: #fafafa;
+}
+
+/* 搜索和筛选区域 */
+.search-filter-area {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #e5e6eb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+}
+
+.search-input:hover {
+  border-color: #c9ccd4;
+}
+
+.search-input input {
+  border: none;
+  outline: none;
+  flex: 1;
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+/* 状态标签 */
+.status-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  min-width: 80px;
+  border: 1px solid transparent;
+}
+
+/* 任务状态样式 */
+.status-tag[title="draft"],
+.status-tag:contains("草稿") {
+  background-color: #f5f5f6;
+  color: #909399;
+  border-color: #d9d9d9;
+}
+
+.status-tag[title="released"],
+.status-tag:contains("已下达") {
+  background-color: #e6f7ff;
+  color: #1890ff;
+  border-color: #91d5ff;
+}
+
+.status-tag[title="pend_conf"],
+.status-tag:contains("待确认目标") {
+  background-color: #fffbe6;
+  color: #faad14;
+  border-color: #ffe58f;
+}
+
+.status-tag[title="pend_rec_act"],
+.status-tag:contains("待记录对策") {
+  background-color: #f6ffed;
+  color: #52c41a;
+  border-color: #b7eb8f;
+}
+
+.status-tag[title="reject"],
+.status-tag:contains("已拒绝") {
+  background-color: #fff2f0;
+  color: #f5222d;
+  border-color: #ffccc7;
+}
+
+.status-tag[title="pend_conf_act"],
+.status-tag:contains("待确认对策") {
+  background-color: #e6fffb;
+  color: #13c2c2;
+  border-color: #87e8de;
+}
+
+.status-tag[title="conf_pend_launch"],
+.status-tag:contains("已确认待启动") {
+  background-color: #fff0f6;
+  color: #eb2f96;
+  border-color: #ffadd2;
+}
+
+.status-tag[title="launched"],
+.status-tag:contains("已启动") {
+  background-color: #f6ffed;
+  color: #52c41a;
+  border-color: #b7eb8f;
+}
+
+.status-tag[title="pend_accept"],
+.status-tag:contains("待验收") {
+  background-color: #fff7e6;
+  color: #fa8c16;
+  border-color: #ffd591;
+}
+
+.status-tag[title="closed"],
+.status-tag:contains("关闭") {
+  background-color: #f5f5f6;
+  color: #909399;
+  border-color: #d9d9d9;
+}
+
+/* 会议状态样式 */
+.status-tag.notified {
+  background-color: #e6f7ff;
+  color: #1890ff;
+  border: 1px solid #bae6fd;
+}
+
+.status-tag.in_progress {
+  background-color: #fffbe6;
+  color: #faad14;
+  border: 1px solid #ffe58f;
+}
+
+.status-tag.decision_confirming {
+  background-color: #fff2f0;
+  color: #f5222d;
+  border: 1px solid #ffccc7;
+}
+
+.status-tag.completed {
+  background-color: #f6ffed;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
+}
+
+/* 待办事项 */
+.todo-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 12px;
+  border: 1px solid #f0f2f5;
+  transition: all 0.2s ease;
+}
+
+.todo-item:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.todo-item input[type="checkbox"] {
+  margin-top: 2px;
+  transform: scale(1.2);
+  accent-color: #007aff;
+}
+
+.todo-content {
+  flex: 1;
+}
+
+.todo-title {
+  font-weight: 500;
+  color: #1d2129;
+  margin-bottom: 4px;
+}
+
+.todo-desc {
+  color: #65676b;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+/* 飞书风格抽屉 */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  animation: drawerFadeIn 0.3s ease;
+}
+
+@keyframes drawerFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.drawer-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: overlayFadeIn 0.3s ease;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.drawer-content {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  height: 100%;
+  background-color: white;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.12);
+  animation: drawerSlideIn 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@keyframes drawerSlideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e6eb;
+  background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.drawer-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 0;
+  border: none;
+}
+
+.drawer-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #65676b;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.drawer-close:hover {
+  background-color: #f5f5f6;
+  color: #1d2129;
+}
+
+.drawer-body {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  background-color: #f7f8fa;
+}
+
+/* 飞书风格模态框 */
+.modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: overlayFadeIn 0.3s ease;
+}
+
+.modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  animation: modalSlideIn 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e6eb;
+  background-color: white;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 0;
+  border: none;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #65676b;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background-color: #f5f5f6;
+  color: #1d2129;
+}
+
+.modal-body {
+  padding: 24px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid #e5e6eb;
+  background-color: #fafafa;
+}
+
+/* 模板列表样式 */
+.template-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.template-item {
+  padding: 16px;
+  border: 1px solid #e5e6eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.template-item:hover {
+  border-color: #007aff;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.template-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.template-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.template-used-count {
+  font-size: 12px;
+  color: #65676b;
+  background-color: #f5f5f6;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.template-desc {
+  margin: 0;
+  font-size: 12px;
+  color: #65676b;
+  line-height: 1.4;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-right: none;
+    border-bottom: 1px solid #e5e6eb;
+  }
+  
+  .sidebar ul {
+    display: flex;
+    overflow-x: auto;
+    padding: 8px 0;
+  }
+  
+  .sidebar li {
+    flex-shrink: 0;
+  }
+  
+  .sidebar a {
+    white-space: nowrap;
+    border-radius: 20px;
+    margin: 0 8px;
+  }
+  
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .meetings-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .agenda-add-section {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .content {
+    padding: 16px;
+  }
+  
+  .page {
+    padding: 16px;
+  }
+  
+  .drawer-content {
+    max-width: 100%;
+  }
+  
+  .modal-content {
+    max-width: 90%;
+    margin: 20px;
+  }
+}

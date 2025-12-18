@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会议管理系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1>会议管理系统</h1>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <span style="font-size: 14px;">欢迎，张三</span>
+                <div style="width: 32px; height: 32px; border-radius: 50%; background-color: #007aff; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600;">张</div>
+            </div>
+        </header>
+        <div class="container">
+            <nav class="sidebar">
+                <ul>
+                    <li><a href="#dashboard" onclick="showPage('dashboard')">工作台</a></li>
+                    <li><a href="#meetings" onclick="showPage('meetings')">会议列表</a></li>
+                    <!-- <li><a href="#create-meeting" onclick="showPage('create-meeting')">创建会议</a></li> -->
+                    <li><a href="#agenda-templates" onclick="showPage('agenda-templates')">议程模板</a></li>
+                    <li><a href="#tasks" onclick="showPage('tasks')">任务清单</a></li>
+                </ul>
+            </nav>
+            <main class="content">
+                <!-- 工作台 -->
+                <div id="dashboard" class="page active">
+                    <!-- 顶部操作栏 -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h2>工作台</h2>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <button class="button" style="background-color: #52c41a;" onclick="openCreateMeetingDrawer()">新建会议</button>
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background-color: #1890ff; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">张</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 统计卡片区域 -->
+                    <div class="grid" style="margin-bottom: 2rem;">
+                        <div class="stats-card">
+                            <div class="number">2</div>
+                            <div class="label">今日会议</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="number">12</div>
+                            <div class="label">总会议数</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="number">3</div>
+                            <div class="label">待确认会议</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="number">5</div>
+                            <div class="label">已归档会议</div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="number">45min</div>
+                            <div class="label">平均会议时长</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 我的会议 -->
+                    <div style="margin-bottom: 2rem;">
+                        <h3>我的会议</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                            <!-- 定制应用需求评审会议 -->
+                            <div class="card">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                    <h4>定制应用需求评审会议</h4>
+                                    <span class="status-tag decision_confirming">决议确认中</span>
+                                </div>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>时间:</strong> 2025-12-19 10:00 - 12:00</p>
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>地点:</strong> 腾讯会议 111 222 333</p>
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>召集人:</strong> 产品经理</p>
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>我的角色:</strong> 技术负责人</p>
+                                </div>
+                                <div style="display: flex;">
+                                    <button class="button" style="flex: 1;">确认决议</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 定制应用技术架构设计 -->
+                            <div class="card">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                    <h4>定制应用技术架构设计</h4>
+                                    <span class="status-tag in_progress">会议中</span>
+                                </div>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>时间:</strong> 2025-12-19 14:00 - 16:00</p>
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>地点:</strong> 研发部会议室</p>
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>召集人:</strong> 架构师</p>
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>我的角色:</strong> 后端开发</p>
+                                </div>
+                                <div style="display: flex;">
+                                    <button class="button" style="flex: 1;">进入会议</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 定制应用开发进度同步 -->
+                            <div class="card">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                    <h4>定制应用开发进度同步</h4>
+                                    <span class="status-tag notified">已通知</span>
+                                </div>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>时间:</strong> 2025-12-20 15:00 - 16:00</p>
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>地点:</strong> 腾讯会议 444 555 666</p>
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>召集人:</strong> 项目经理</p>
+                                    <p style="color: #666; margin-bottom: 0.5rem;"><strong>我的角色:</strong> 开发人员</p>
+                                </div>
+                                <div style="display: flex;">
+                                    <button class="button" style="flex: 1;">确认参加</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+                
+                <!-- 会议列表 -->
+                <div id="meetings" class="page">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h2>会议列表</h2>
+                        <button class="button" onclick="openCreateMeetingDrawer()">创建会议</button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="flex: 1;">
+                            <input type="text" placeholder="搜索会议主题..." id="meeting-search" oninput="filterMeetings()" style="width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #d9d9d9;">
+                        </div>
+                        <select id="meeting-filter" onchange="filterMeetings()" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #d9d9d9;">
+                            <option value="all">所有状态</option>
+                            <option value="notified">已通知</option>
+                            <option value="in_progress">进行中</option>
+                            <option value="decision_confirming">决议确认中</option>
+                        </select>
+                    </div>
+                    
+                    <div class="meetings-grid">
+                        <!-- 定制应用需求评审会议 -->
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                <div>
+                                    <h3>定制应用需求评审会议</h3>
+                                    <p style="color: #666; margin: 0.5rem 0;">2025-12-19 10:00 - 12:00</p>
+                                    <p style="color: #666; margin: 0.5rem 0;">召集人: 产品经理 | 负责人: 技术负责人</p>
+                                    <p style="color: #666; margin: 0.5rem 0;">参会人数: 8</p>
+                                </div>
+                                <span class="status-tag decision_confirming">决议确认中</span>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="button secondary" style="flex: 1;" onclick="showMeetingDetail('1')">查看详情</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 定制应用技术架构设计 -->
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                <div>
+                                    <h3>定制应用技术架构设计</h3>
+                                    <p style="color: #666; margin: 0.5rem 0;">2025-12-19 14:00 - 16:00</p>
+                                    <p style="color: #666; margin: 0.5rem 0;">召集人: 架构师 | 负责人: 后端开发</p>
+                                    <p style="color: #666; margin: 0.5rem 0;">参会人数: 6</p>
+                                </div>
+                                <span class="status-tag in_progress">会议中</span>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="button secondary" style="flex: 1;" onclick="showMeetingDetail('2')">查看详情</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 定制应用开发进度同步 -->
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                <div>
+                                    <h3>定制应用开发进度同步</h3>
+                                    <p style="color: #666; margin: 0.5rem 0;">2025-12-20 15:00 - 16:00</p>
+                                    <p style="color: #666; margin: 0.5rem 0;">召集人: 项目经理 | 负责人: 开发团队</p>
+                                    <p style="color: #666; margin: 0.5rem 0;">参会人数: 12</p>
+                                </div>
+                                <span class="status-tag notified">已通知</span>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="button secondary" style="flex: 1;" onclick="showMeetingDetail('3')">查看详情</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 定制应用UI/UX设计评审 -->
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                <div>
+                                    <h3>定制应用UI/UX设计评审</h3>
+                                    <p style="color: #666; margin: 0.5rem 0;">2025-12-21 10:00 - 11:30</p>
+                                    <p style="color: #666; margin: 0.5rem 0;">召集人: UI设计师 | 负责人: 产品经理</p>
+                                    <p style="color: #666; margin: 0.5rem 0;">参会人数: 5</p>
+                                </div>
+                                <span class="status-tag notified">已通知</span>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="button secondary" style="flex: 1;" onclick="showMeetingDetail('4')">查看详情</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 抽屉式创建会议 -->
+                <div id="create-meeting-drawer" class="drawer" style="display: none;">
+                    <div class="drawer-overlay" onclick="closeCreateMeetingDrawer()"></div>
+                    <div class="drawer-content">
+                        <div class="drawer-header">
+                            <h2>创建会议</h2>
+                            <button class="drawer-close" onclick="closeCreateMeetingDrawer()">&times;</button>
+                        </div>
+                        <div class="drawer-body">
+                            <form id="meeting-form">
+                        <div class="form-group">
+                            <label for="title">会议主题 *</label>
+                            <input type="text" id="title" name="title" required placeholder="请输入会议主题">
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label for="startTime">开始时间 *</label>
+                                <input type="datetime-local" id="startTime" name="startTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="endTime">结束时间 *</label>
+                                <input type="datetime-local" id="endTime" name="endTime" required>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label for="organizer">召集人 *</label>
+                                <select id="organizer" name="organizer" required>
+                                    <option value="">请选择召集人</option>
+                                    <option value="zhangsan">张三</option>
+                                    <option value="lisi">李四</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="负责人">负责人 *</label>
+                                <select id="负责人" name="负责人" required>
+                                    <option value="">请选择负责人</option>
+                                    <option value="zhangsan">张三</option>
+                                    <option value="lisi">李四</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="location">地点</label>
+                            <input type="text" id="location" name="location" placeholder="请输入会议地点">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>参会人 *</label>
+                            <div style="border: 1px solid #d9d9d9; border-radius: 4px; padding: 0.5rem; min-height: 80px;">
+                                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                    <span style="background-color: #e6f7ff; color: #1890ff; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.8rem;">参会人 1</span>
+                                    <span style="background-color: #e6f7ff; color: #1890ff; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.8rem;">参会人 2</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="switch-container">
+                                <label for="enable-agenda" class="switch-label">是否启用会议议程</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="enable-agenda" name="enableAgenda" checked onchange="toggleAgenda()">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <!-- 议程区域 -->
+                            <div id="agenda-section">
+                                <div style="margin-bottom: 24px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <h4>添加议程</h4>
+                                        <button type="button" class="button secondary" onclick="openAgendaTemplateModal()">引入议程模板</button>
+                                    </div>
+                                    <div class="agenda-add-section">
+                                        <input type="text" placeholder="议程标题" id="agenda-title" style="width: 100%;">
+                                        <input type="datetime-local" id="agenda-start" style="width: 100%;">
+                                        <input type="datetime-local" id="agenda-end" style="width: 100%;">
+                                        <input type="text" placeholder="议程描述" id="agenda-desc" style="width: 100%;">
+                                        <button type="button" class="button" onclick="addAgenda()">添加</button>
+                                    </div>
+                                </div>
+                                
+                                <div id="agenda-list" class="agenda-list"></div>
+                            </div>
+                            
+                            <!-- 无需添加议程提示 -->
+                            <div id="no-agenda-tip" style="display: none;" class="info-tip">
+                                <strong>无需添加议程</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>附件</label>
+                            <div style="border: 2px dashed #d9d9d9; border-radius: 4px; padding: 1rem; text-align: center;">
+                                <input type="file" multiple>
+                                <p style="color: #666; font-size: 0.8rem; margin-top: 0.5rem;">
+                                    支持上传多个文件，单个文件不超过100MB
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                            <button type="submit" class="button">保存并发送通知</button>
+                            <button type="button" class="button secondary" onclick="closeCreateMeetingDrawer()">取消</button>
+                        </div>
+                    </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 议程模板选择模态框 -->
+                <div id="agenda-template-modal" class="modal" style="display: none;">
+                    <div class="modal-overlay" onclick="closeAgendaTemplateModal()"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>选择议程模板</h3>
+                            <button class="modal-close" onclick="closeAgendaTemplateModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="template-list">
+                                <!-- 模板1 -->
+                                <div class="template-item" onclick="selectAgendaTemplate(0)">
+                                    <div class="template-header">
+                                        <h4>产品规划会议</h4>
+                                        <span class="template-used-count">12次</span>
+                                    </div>
+                                    <p class="template-desc">标准的产品规划会议议程模板，包含项目背景、目标设定、规划讨论等环节</p>
+                                </div>
+                                
+                                <!-- 模板2 -->
+                                <div class="template-item" onclick="selectAgendaTemplate(1)">
+                                    <div class="template-header">
+                                        <h4>技术方案评审</h4>
+                                        <span class="template-used-count">8次</span>
+                                    </div>
+                                    <p class="template-desc">技术方案评审会议议程模板，包含方案介绍、技术难点、风险评估等环节</p>
+                                </div>
+                                
+                                <!-- 模板3 -->
+                                <div class="template-item" onclick="selectAgendaTemplate(2)">
+                                    <div class="template-header">
+                                        <h4>营销会议</h4>
+                                        <span class="template-used-count">5次</span>
+                                    </div>
+                                    <p class="template-desc">营销策略讨论会议议程模板，包含市场分析、策略制定、执行计划等环节</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="button secondary" onclick="closeAgendaTemplateModal()">取消</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 编辑议程模态框 -->
+                <div id="edit-agenda-modal" class="modal" style="display: none;">
+                    <div class="modal-overlay" onclick="closeEditAgendaModal()"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>编辑议程</h3>
+                            <button class="modal-close" onclick="closeEditAgendaModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="edit-agenda-form">
+                                <input type="hidden" id="edit-agenda-index">
+                                <div class="form-group">
+                                    <label for="edit-agenda-title">议程标题 *</label>
+                                    <input type="text" id="edit-agenda-title" name="title" required placeholder="请输入议程标题">
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label for="edit-agenda-start">开始时间</label>
+                                        <input type="datetime-local" id="edit-agenda-start" name="startTime">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit-agenda-end">结束时间</label>
+                                        <input type="datetime-local" id="edit-agenda-end" name="endTime">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-agenda-desc">议程描述</label>
+                                    <textarea id="edit-agenda-desc" name="description" placeholder="请输入议程描述" rows="3"></textarea>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="button secondary" onclick="closeEditAgendaModal()">取消</button>
+                            <button class="button" onclick="saveEditedAgenda()">保存</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 会议详情 -->
+                <div id="meeting-detail" class="page">
+                    <button class="button secondary" onclick="showPage('meetings')" style="margin-bottom: 1rem;">返回列表</button>
+                    <div id="meeting-detail-content">
+                        <!-- 会议详情内容将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 议程模板 -->
+                <div id="agenda-templates" class="page">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h2>议程模板</h2>
+                        <button class="button">新建模板</button>
+                    </div>
+                    
+                    <div class="card">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e8e8e8;">
+                                    <th style="text-align: left; padding: 0.75rem;">模板名称</th>
+                                    <th style="text-align: left; padding: 0.75rem;">描述</th>
+                                    <th style="text-align: left; padding: 0.75rem;">创建时间</th>
+                                    <th style="text-align: left; padding: 0.75rem;">使用次数</th>
+                                    <th style="text-align: left; padding: 0.75rem;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 模板1 -->
+                                <tr style="border-bottom: 1px solid #f0f0f0;">
+                                    <td style="padding: 0.75rem;">
+                                        <h4>产品规划会议</h4>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <p style="color: #666; font-size: 0.9rem;">标准的产品规划会议议程模板</p>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <span style="color: #666; font-size: 0.9rem;">2023-09-15</span>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <span style="color: #666; font-size: 0.9rem;">12次</span>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button class="button secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">编辑</button>
+                                            <button class="button danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">删除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- 模板2 -->
+                                <tr style="border-bottom: 1px solid #f0f0f0;">
+                                    <td style="padding: 0.75rem;">
+                                        <h4>技术方案评审</h4>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <p style="color: #666; font-size: 0.9rem;">技术方案评审会议议程模板</p>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <span style="color: #666; font-size: 0.9rem;">2023-09-20</span>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <span style="color: #666; font-size: 0.9rem;">8次</span>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button class="button secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">编辑</button>
+                                            <button class="button danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">删除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- 模板3 -->
+                                <tr style="border-bottom: 1px solid #f0f0f0;">
+                                    <td style="padding: 0.75rem;">
+                                        <h4>营销会议</h4>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <p style="color: #666; font-size: 0.9rem;">营销策略讨论会议议程模板</p>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <span style="color: #666; font-size: 0.9rem;">2023-10-05</span>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <span style="color: #666; font-size: 0.9rem;">5次</span>
+                                    </td>
+                                    <td style="padding: 0.75rem;">
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button class="button secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">编辑</button>
+                                            <button class="button danger" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">删除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 任务清单 -->
+                <div id="tasks" class="page">
+                    <h2>任务清单</h2>
+                    
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <select id="task-status-filter" onchange="filterTasks()" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #d9d9d9;">
+                            <option value="all">所有状态</option>
+                            <option value="pending">待处理</option>
+                            <option value="in_progress">进行中</option>
+                            <option value="completed">已完成</option>
+                        </select>
+                        
+                        <select id="task-priority-filter" onchange="filterTasks()" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #d9d9d9;">
+                            <option value="all">所有优先级</option>
+                            <option value="low">低</option>
+                            <option value="medium">中</option>
+                            <option value="high">高</option>
+                        </select>
+                    </div>
+                    
+                    <div class="card">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e8e8e8;">
+                                    <th style="text-align: left; padding: 0.5rem;">任务名称</th>
+                                    <th style="text-align: left; padding: 0.5rem;">所属会议</th>
+                                    <th style="text-align: left; padding: 0.5rem;">承接人</th>
+                                    <th style="text-align: left; padding: 0.5rem;">发布人</th>
+                                    <th style="text-align: left; padding: 0.5rem;">截止时间</th>
+                                    <th style="text-align: left; padding: 0.5rem;">状态</th>
+                                    <th style="text-align: left; padding: 0.5rem;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid #f0f0f0;">
+                                    <td style="padding: 0.5rem;">
+                                        <div>完成会议纪要</div>
+                                        <div style="color: #666; font-size: 0.8rem; margin-top: 0.25rem;">整理项目启动会议的纪要内容</div>
+                                    </td>
+                                    <td style="padding: 0.5rem;">项目启动会议</td>
+                                    <td style="padding: 0.5rem;">王五</td>
+                                    <td style="padding: 0.5rem;">张三</td>
+                                    <td style="padding: 0.5rem;">2025-12-18 18:00</td>
+                                    <td style="padding: 0.5rem;">
+                                        <span class="status-tag">草稿</span>
+                                    </td>
+                                    <td style="padding: 0.5rem;">
+                                        <button class="button secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">查看详情</button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #f0f0f0;">
+                                    <td style="padding: 0.5rem;">
+                                        <div>准备演示材料</div>
+                                        <div style="color: #666; font-size: 0.8rem; margin-top: 0.25rem;">准备项目的演示PPT</div>
+                                    </td>
+                                    <td style="padding: 0.5rem;">项目启动会议</td>
+                                    <td style="padding: 0.5rem;">赵六</td>
+                                    <td style="padding: 0.5rem;">张三</td>
+                                    <td style="padding: 0.5rem;">2025-12-19 10:00</td>
+                                    <td style="padding: 0.5rem;">
+                                        <span class="status-tag">已下达</span>
+                                    </td>
+                                    <td style="padding: 0.5rem;">
+                                        <button class="button secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">查看详情</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
