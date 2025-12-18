@@ -32,7 +32,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                         <h2>工作台</h2>
                         <div style="display: flex; align-items: center; gap: 1rem;">
-                            <button class="button" style="background-color: #52c41a;" onclick="openCreateMeetingDrawer()">新建会议</button>
+                            <button class="button" onclick="openCreateMeetingDrawer()">新建会议</button>
                             <div style="width: 32px; height: 32px; border-radius: 50%; background-color: #1890ff; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">张</div>
                         </div>
                     </div>
@@ -397,6 +397,85 @@
                         <div class="modal-footer">
                             <button class="button secondary" onclick="closeEditAgendaModal()">取消</button>
                             <button class="button" onclick="saveEditedAgenda()">保存</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 新建议程模板模态框 -->
+                <div id="create-agenda-template-modal" class="modal" style="display: none;">
+                    <div class="modal-overlay" onclick="closeCreateAgendaTemplateModal()"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>新建议程模板</h3>
+                            <button class="modal-close" onclick="closeCreateAgendaTemplateModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="create-agenda-template-form">
+                                <div class="form-group">
+                                    <label for="template-name">模板名称 *</label>
+                                    <input type="text" id="template-name" name="name" required placeholder="请输入模板名称">
+                                </div>
+                                <div class="form-group">
+                                    <label for="template-desc">模板描述</label>
+                                    <textarea id="template-desc" name="description" placeholder="请输入模板描述" rows="3"></textarea>
+                                </div>
+                                
+                                <!-- 议程列表区域 -->
+                                <div class="form-group">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <label>议程列表</label>
+                                        <button type="button" class="button secondary" onclick="addAgendaItem()" style="padding: 6px 12px; font-size: 12px;">添加议程项</button>
+                                    </div>
+                                    
+                                    <div id="template-agenda-list" style="border: 1px solid #e5e6eb; border-radius: 8px; padding: 12px; min-height: 100px;">
+                                        <p style="color: #666; text-align: center;" id="no-agenda-items">暂无议程项，点击"添加议程项"按钮添加</p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="button secondary" onclick="closeCreateAgendaTemplateModal()">取消</button>
+                            <button class="button" onclick="saveNewAgendaTemplate()">保存</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 编辑议程模板模态框 -->
+                <div id="edit-agenda-template-modal" class="modal" style="display: none;">
+                    <div class="modal-overlay" onclick="closeEditAgendaTemplateModal()"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>编辑议程模板</h3>
+                            <button class="modal-close" onclick="closeEditAgendaTemplateModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="edit-agenda-template-form">
+                                <input type="hidden" id="edit-template-id">
+                                <div class="form-group">
+                                    <label for="edit-template-name">模板名称 *</label>
+                                    <input type="text" id="edit-template-name" name="name" required placeholder="请输入模板名称">
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-template-desc">模板描述</label>
+                                    <textarea id="edit-template-desc" name="description" placeholder="请输入模板描述" rows="3"></textarea>
+                                </div>
+                                
+                                <!-- 议程列表区域 -->
+                                <div class="form-group">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <label>议程列表</label>
+                                        <button type="button" class="button secondary" onclick="addAgendaItem()" style="padding: 6px 12px; font-size: 12px;">添加议程项</button>
+                                    </div>
+                                    
+                                    <div id="edit-template-agenda-list" style="border: 1px solid #e5e6eb; border-radius: 8px; padding: 12px; min-height: 100px;">
+                                        <p style="color: #666; text-align: center;" id="edit-no-agenda-items">暂无议程项，点击"添加议程项"按钮添加</p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="button secondary" onclick="closeEditAgendaTemplateModal()">取消</button>
+                            <button class="button" onclick="saveEditedAgendaTemplate()">保存</button>
                         </div>
                     </div>
                 </div>

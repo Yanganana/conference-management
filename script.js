@@ -1,6 +1,132 @@
 // 全局变量
 let currentPage = 'dashboard';
 let agendas = [];
+let templateAgendas = [];
+
+// 演示会议数据 - 包含六个状态
+let meetings = [
+    {
+        id: 1,
+        title: '产品需求评审会议',
+        time: '2024-07-20 14:00-15:00',
+        location: '会议室A',
+        organizer: '张三',
+        attendees: ['李四', '王五', '赵六'],
+        status: 'not_started',
+        agenda: [
+            { id: 1, title: '需求背景介绍', duration: 10, presenter: '张三' },
+            { id: 2, title: '功能模块讨论', duration: 20, presenter: '李四' },
+            { id: 3, title: '时间规划确认', duration: 15, presenter: '王五' },
+            { id: 4, title: '风险评估', duration: 15, presenter: '赵六' }
+        ],
+        tasks: [
+            { id: 1, title: '完善需求文档', assignee: '李四', deadline: '2024-07-22', status: 'pending' },
+            { id: 2, title: '制定开发计划', assignee: '王五', deadline: '2024-07-23', status: 'pending' }
+        ],
+        minutes: '会议讨论了产品需求，确定了功能模块和时间规划。',
+        checkInStatus: 'not_started'
+    },
+    {
+        id: 2,
+        title: '项目进度同步会议',
+        time: '2024-07-18 10:00-11:00',
+        location: '会议室B',
+        organizer: '李四',
+        attendees: ['张三', '王五', '赵六'],
+        status: 'in_progress',
+        agenda: [
+            { id: 1, title: '上周工作回顾', duration: 20, presenter: '张三' },
+            { id: 2, title: '本周计划安排', duration: 20, presenter: '李四' },
+            { id: 3, title: '问题讨论', duration: 20, presenter: '王五' }
+        ],
+        tasks: [
+            { id: 3, title: '修复登录 bug', assignee: '赵六', deadline: '2024-07-19', status: 'in_progress' },
+            { id: 4, title: '优化数据库查询', assignee: '张三', deadline: '2024-07-20', status: 'pending' }
+        ],
+        minutes: '',
+        checkInStatus: 'checking_in'
+    },
+    {
+        id: 3,
+        title: '技术架构设计会议',
+        time: '2024-07-15 16:00-17:30',
+        location: '线上会议',
+        organizer: '王五',
+        attendees: ['张三', '李四', '赵六', '孙七'],
+        status: 'ended',
+        agenda: [
+            { id: 1, title: '架构方案介绍', duration: 30, presenter: '王五' },
+            { id: 2, title: '技术选型讨论', duration: 30, presenter: '赵六' },
+            { id: 3, title: '性能优化建议', duration: 30, presenter: '孙七' }
+        ],
+        tasks: [
+            { id: 5, title: '设计API文档', assignee: '孙七', deadline: '2024-07-18', status: 'completed' },
+            { id: 6, title: '搭建开发环境', assignee: '张三', deadline: '2024-07-17', status: 'completed' }
+        ],
+        minutes: '确定了微服务架构方案，技术栈选用 Node.js + Express + MongoDB。',
+        checkInStatus: 'completed'
+    },
+    {
+        id: 4,
+        title: '市场推广会议',
+        time: '2024-07-19 13:30-14:30',
+        location: '会议室C',
+        organizer: '赵六',
+        attendees: ['张三', '李四', '王五'],
+        status: 'cancelled',
+        agenda: [
+            { id: 1, title: '推广计划介绍', duration: 20, presenter: '赵六' },
+            { id: 2, title: '预算讨论', duration: 20, presenter: '李四' },
+            { id: 3, title: '执行方案确认', duration: 20, presenter: '张三' }
+        ],
+        tasks: [],
+        minutes: '',
+        checkInStatus: 'not_started'
+    },
+    {
+        id: 5,
+        title: '2024年第一季度总结会议',
+        time: '2024-04-05 09:00-11:00',
+        location: '大会议室',
+        organizer: '张三',
+        attendees: ['李四', '王五', '赵六', '孙七', '周八'],
+        status: 'archived',
+        agenda: [
+            { id: 1, title: '季度业绩回顾', duration: 40, presenter: '张三' },
+            { id: 2, title: '团队表现分析', duration: 30, presenter: '李四' },
+            { id: 3, title: '存在问题讨论', duration: 30, presenter: '王五' },
+            { id: 4, title: '改进措施制定', duration: 20, presenter: '赵六' }
+        ],
+        tasks: [
+            { id: 7, title: '更新绩效考核制度', assignee: '孙七', deadline: '2024-04-15', status: 'completed' },
+            { id: 8, title: '制定第二季度目标', assignee: '周八', deadline: '2024-04-10', status: 'completed' }
+        ],
+        minutes: '第一季度业绩达到预期，团队表现良好，制定了第二季度改进措施。',
+        checkInStatus: 'completed'
+    },
+    {
+        id: 6,
+        title: '新员工入职培训会议',
+        time: '2024-07-25 09:30-11:30',
+        location: '培训室',
+        organizer: '孙七',
+        attendees: ['张三', '李四', '王五', '赵六', '周八'],
+        status: 'pending_confirmation',
+        agenda: [
+            { id: 1, title: '公司介绍', duration: 20, presenter: '孙七' },
+            { id: 2, title: '部门职责说明', duration: 30, presenter: '张三' },
+            { id: 3, title: '工作流程讲解', duration: 30, presenter: '李四' },
+            { id: 4, title: '企业文化分享', duration: 10, presenter: '王五' },
+            { id: 5, title: 'Q&A', duration: 20, presenter: '赵六' }
+        ],
+        tasks: [
+            { id: 9, title: '准备培训材料', assignee: '孙七', deadline: '2024-07-24', status: 'pending' },
+            { id: 10, title: '安排培训座位', assignee: '周八', deadline: '2024-07-24', status: 'pending' }
+        ],
+        minutes: '',
+        checkInStatus: 'not_started'
+    }
+];
 
 // 页面导航功能
 function showPage(pageId) {
@@ -23,6 +149,27 @@ function showPage(pageId) {
         
         // 更新URL哈希
         window.location.hash = pageId;
+        
+        // 更新导航菜单的选中状态
+        updateNavActiveState(pageId);
+        
+        // 保存当前选中状态到localStorage
+        localStorage.setItem('activePage', pageId);
+    }
+}
+
+// 更新导航菜单的选中状态
+function updateNavActiveState(pageId) {
+    // 移除所有菜单项的active类
+    const navLinks = document.querySelectorAll('.sidebar a');
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // 为当前页面的菜单项添加active类
+    const activeLink = document.querySelector(`.sidebar a[href="#${pageId}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
     }
 }
 
@@ -266,9 +413,96 @@ function init() {
     initMockData();
 }
 
+// 渲染会议列表
+function renderMeetings() {
+    const meetingsGrid = document.querySelector('.meetings-grid');
+    if (!meetingsGrid) return;
+    
+    // 清空现有内容
+    meetingsGrid.innerHTML = '';
+    
+    // 遍历会议数据，生成会议卡片
+    meetings.forEach(meeting => {
+        // 获取状态文本和样式类
+        const statusInfo = getMeetingStatusInfo(meeting.status);
+        
+        // 创建会议卡片元素
+        const meetingCard = document.createElement('div');
+        meetingCard.className = 'card';
+        meetingCard.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div>
+                    <h3>${meeting.title}</h3>
+                    <p style="color: #666; margin: 0.5rem 0;">${meeting.time}</p>
+                    <p style="color: #666; margin: 0.5rem 0;">召集人: ${meeting.organizer}</p>
+                    <p style="color: #666; margin: 0.5rem 0;">参会人数: ${meeting.attendees.length}</p>
+                </div>
+                <span class="status-tag ${meeting.status}">${statusInfo.text}</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="button secondary" style="flex: 1;" onclick="showMeetingDetail(${meeting.id})">查看详情</button>
+            </div>
+        `;
+        
+        // 添加到会议列表
+        meetingsGrid.appendChild(meetingCard);
+    });
+}
+
+// 获取会议状态信息
+function getMeetingStatusInfo(status) {
+    const statusMap = {
+        'not_started': { text: '未开始', class: 'not_started' },
+        'in_progress': { text: '进行中', class: 'in_progress' },
+        'ended': { text: '已结束', class: 'ended' },
+        'cancelled': { text: '已取消', class: 'cancelled' },
+        'archived': { text: '已归档', class: 'archived' },
+        'pending_confirmation': { text: '待确认', class: 'pending_confirmation' }
+    };
+    return statusMap[status] || { text: '未知', class: '' };
+}
+
 // 初始化模拟数据
 function initMockData() {
-    // 这里可以初始化一些模拟数据
+    // 渲染会议列表
+    renderMeetings();
+    
+    // 初始化议程模板数据
+    templateAgendas = [
+        {
+            id: 1,
+            name: '常规会议',
+            items: [
+                { title: '开场介绍', duration: 5, presenter: '主持人' },
+                { title: '主题讨论', duration: 20, presenter: '主讲人' },
+                { title: '问题答疑', duration: 10, presenter: '全体' },
+                { title: '总结安排', duration: 5, presenter: '主持人' }
+            ]
+        },
+        {
+            id: 2,
+            name: '项目启动会议',
+            items: [
+                { title: '项目背景', duration: 15, presenter: '项目经理' },
+                { title: '目标设定', duration: 15, presenter: '项目经理' },
+                { title: '分工安排', duration: 20, presenter: '项目经理' },
+                { title: '时间规划', duration: 15, presenter: '项目经理' },
+                { title: '风险评估', duration: 15, presenter: '全体' }
+            ]
+        },
+        {
+            id: 3,
+            name: '需求评审会议',
+            items: [
+                { title: '需求背景', duration: 10, presenter: '产品经理' },
+                { title: '功能模块', duration: 20, presenter: '产品经理' },
+                { title: '技术可行性', duration: 15, presenter: '技术负责人' },
+                { title: '时间评估', duration: 15, presenter: '技术负责人' },
+                { title: '风险点讨论', duration: 15, presenter: '全体' }
+            ]
+        }
+    ];
+    
     console.log('初始化模拟数据');
 }
 
@@ -657,5 +891,237 @@ function toggleAgenda() {
     }
 }
 
+// 打开新建议程模板模态框
+function openCreateAgendaTemplateModal() {
+    // 初始化模板议程列表
+    templateAgendas = [];
+    
+    // 打开模态框
+    const modal = document.getElementById('create-agenda-template-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // 禁止背景滚动
+    
+    // 更新议程列表显示
+    updateTemplateAgendaList();
+}
+
+// 关闭新建议程模板模态框
+function closeCreateAgendaTemplateModal() {
+    const modal = document.getElementById('create-agenda-template-modal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // 恢复背景滚动
+    
+    // 重置表单
+    document.getElementById('create-agenda-template-form').reset();
+    
+    // 清空模板议程列表
+    templateAgendas = [];
+}
+
+// 添加议程项到模板
+function addAgendaItem() {
+    // 生成唯一ID
+    const id = Date.now();
+    
+    // 添加新议程项
+    templateAgendas.push({
+        id: id,
+        title: '新议程项',
+        description: ''
+    });
+    
+    // 更新议程列表显示
+    updateTemplateAgendaList();
+}
+
+// 更新模板议程列表显示
+function updateTemplateAgendaList() {
+    // 检查当前是在创建模板还是编辑模板
+    let agendaList, noAgendaItems, isEditMode = false;
+    
+    // 检查当前哪个模态框是可见的
+    const createModal = document.getElementById('create-agenda-template-modal');
+    const editModal = document.getElementById('edit-agenda-template-modal');
+    
+    if (createModal && createModal.style.display === 'flex') {
+        // 创建模板模式
+        agendaList = document.getElementById('template-agenda-list');
+        noAgendaItems = document.getElementById('no-agenda-items');
+    } else if (editModal && editModal.style.display === 'flex') {
+        // 编辑模板模式
+        isEditMode = true;
+        agendaList = document.getElementById('edit-template-agenda-list');
+        noAgendaItems = document.getElementById('edit-no-agenda-items');
+    } else {
+        console.error('无法确定当前模态框状态');
+        return;
+    }
+    
+    if (!agendaList || !noAgendaItems) {
+        console.error('无法找到议程列表元素');
+        return;
+    }
+    
+    if (templateAgendas.length === 0) {
+        noAgendaItems.style.display = 'block';
+        agendaList.innerHTML = '';
+        agendaList.appendChild(noAgendaItems);
+        return;
+    }
+    
+    noAgendaItems.style.display = 'none';
+    
+    let html = '<div style="display: flex; flex-direction: column; gap: 12px;">';
+    templateAgendas.forEach((item, index) => {
+        html += `
+            <div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px; background-color: #fafafa; border: 1px solid #e5e6eb; border-radius: 8px;">
+                <div style="flex: 1;">
+                    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 8px;">
+                        <input type="text" placeholder="议程标题" value="${item.title}" oninput="templateAgendas[${index}].title = this.value" style="flex: 1; padding: 8px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    <textarea placeholder="议程描述" oninput="templateAgendas[${index}].description = this.value" style="width: 100%; padding: 8px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 14px; resize: vertical; min-height: 60px;">${item.description}</textarea>
+                </div>
+                <button type="button" onclick="removeTemplateAgendaItem(${index})" style="background-color: #ff4d4f; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; height: 32px; align-self: center;">删除</button>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    agendaList.innerHTML = html;
+    // 重新添加noAgendaItems元素，以便下次更新时可以找到它
+    agendaList.appendChild(noAgendaItems);
+}
+
+// 删除模板中的议程项
+function removeTemplateAgendaItem(index) {
+    templateAgendas.splice(index, 1);
+    updateTemplateAgendaList();
+}
+
+// 保存新建议程模板
+function saveNewAgendaTemplate() {
+    const form = document.getElementById('create-agenda-template-form');
+    const name = document.getElementById('template-name').value;
+    const description = document.getElementById('template-desc').value;
+    
+    // 验证表单
+    if (!name.trim()) {
+        alert('请输入模板名称');
+        return;
+    }
+    
+    // 模拟保存数据
+    console.log('保存新议程模板:', {
+        name: name.trim(),
+        description: description.trim(),
+        items: [...templateAgendas]
+    });
+    
+    // 关闭模态框
+    closeCreateAgendaTemplateModal();
+    
+    // 显示成功提示
+    alert('议程模板创建成功！');
+}
+
+// 打开编辑议程模板模态框
+function openEditAgendaTemplateModal(templateId) {
+    // 模拟获取模板数据
+    const template = {
+        id: templateId,
+        name: '产品规划会议',
+        description: '标准的产品规划会议议程模板，包含项目背景、目标设定、规划讨论等环节',
+        items: [
+            {
+                id: 1,
+                title: '项目背景介绍',
+                description: '介绍项目的背景和意义，让参会人员了解会议目的'
+            },
+            {
+                id: 2,
+                title: '目标设定',
+                description: '讨论并确定项目的短期和长期目标'
+            },
+            {
+                id: 3,
+                title: '规划讨论',
+                description: '详细讨论项目的实施计划和步骤'
+            }
+        ]
+    };
+    
+    // 填充表单数据
+    document.getElementById('edit-template-id').value = template.id;
+    document.getElementById('edit-template-name').value = template.name;
+    document.getElementById('edit-template-desc').value = template.description;
+    
+    // 设置议程项
+    templateAgendas = [...template.items];
+    
+    // 更新议程列表显示
+    setTimeout(() => {
+        updateTemplateAgendaList();
+    }, 100);
+    
+    // 打开模态框
+    const modal = document.getElementById('edit-agenda-template-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // 禁止背景滚动
+}
+
+// 关闭编辑议程模板模态框
+function closeEditAgendaTemplateModal() {
+    const modal = document.getElementById('edit-agenda-template-modal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // 恢复背景滚动
+    
+    // 清空模板议程列表
+    templateAgendas = [];
+}
+
+// 保存编辑后的议程模板
+function saveEditedAgendaTemplate() {
+    const form = document.getElementById('edit-agenda-template-form');
+    const templateId = document.getElementById('edit-template-id').value;
+    const name = document.getElementById('edit-template-name').value;
+    const description = document.getElementById('edit-template-desc').value;
+    
+    // 验证表单
+    if (!name.trim()) {
+        alert('请输入模板名称');
+        return;
+    }
+    
+    // 模拟保存数据
+    console.log('保存编辑后的议程模板:', {
+        id: templateId,
+        name: name.trim(),
+        description: description.trim(),
+        items: [...templateAgendas]
+    });
+    
+    // 关闭模态框
+    closeEditAgendaTemplateModal();
+    
+    // 显示成功提示
+    alert('议程模板编辑成功！');
+}
+
 // 页面加载完成后初始化
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', function() {
+    init();
+    
+    // 绑定议程模板页面的事件
+    const newTemplateButton = document.querySelector('#agenda-templates .button');
+    if (newTemplateButton) {
+        newTemplateButton.onclick = openCreateAgendaTemplateModal;
+    }
+    
+    // 绑定编辑按钮事件
+    const editButtons = document.querySelectorAll('#agenda-templates .button.secondary');
+    editButtons.forEach((button, index) => {
+        button.onclick = function() {
+            openEditAgendaTemplateModal(index + 1);
+        };
+    });
+});
