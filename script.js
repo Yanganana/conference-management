@@ -173,6 +173,32 @@ function updateNavActiveState(pageId) {
     }
 }
 
+// 标签页切换功能
+function switchTab(tabId, activeTab) {
+    // 移除所有标签页的active类
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // 移除所有标签页内容的active类并隐藏
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    tabPanes.forEach(pane => {
+        pane.classList.remove('active');
+        pane.style.display = 'none';
+    });
+    
+    // 为当前标签页添加active类
+    activeTab.classList.add('active');
+    
+    // 显示当前标签页内容
+    const targetPane = document.getElementById(tabId);
+    if (targetPane) {
+        targetPane.classList.add('active');
+        targetPane.style.display = 'block';
+    }
+}
+
 // 打开创建会议抽屉
 function openCreateMeetingDrawer() {
     const drawer = document.getElementById('create-meeting-drawer');
@@ -644,37 +670,7 @@ function filterMeetings() {
     });
 }
 
-// 筛选任务
-function filterTasks() {
-    const statusFilter = document.getElementById('task-status-filter').value;
-    const priorityFilter = document.getElementById('task-priority-filter').value;
-    
-    const taskRows = document.querySelectorAll('#tasks tbody tr');
-    
-    taskRows.forEach(row => {
-        const statusCell = row.cells[4];
-        const status = statusCell.querySelector('span').textContent;
-        
-        const priorityCell = row.cells[5];
-        const priority = priorityCell.querySelector('span').textContent;
-        
-        let matchesStatus = statusFilter === 'all' || 
-                           (statusFilter === 'pending' && status === '待处理') ||
-                           (statusFilter === 'in_progress' && status === '进行中') ||
-                           (statusFilter === 'completed' && status === '已完成');
-        
-        let matchesPriority = priorityFilter === 'all' || 
-                              (priorityFilter === 'low' && priority === '低') ||
-                              (priorityFilter === 'medium' && priority === '中') ||
-                              (priorityFilter === 'high' && priority === '高');
-        
-        if (matchesStatus && matchesPriority) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-}
+
 
 // 显示会议详情
 function showMeetingDetail(meetingId) {
@@ -737,7 +733,7 @@ function showMeetingDetail(meetingId) {
             </div>
         </div>
         
-        <div class="card">
+        <div class="card section" id="basic-info-section">
             <h3>会议基本信息</h3>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
                 <div>
@@ -763,7 +759,7 @@ function showMeetingDetail(meetingId) {
             </div>
         </div>
         
-        <div class="card">
+        <div class="card section" id="attendees-section">
             <h3>参会人列表</h3>
             <table style="width: 100%; margin-top: 1rem; border-collapse: collapse;">
                 <thead>
@@ -795,7 +791,7 @@ function showMeetingDetail(meetingId) {
             </table>
         </div>
         
-        <div class="card">
+        <div class="card section" id="agenda-section">
             <h3>会议议程</h3>
             <div class="timeline" style="margin-top: 1rem;">
                 ${mockMeeting.agenda.map((agenda, index) => `
@@ -810,7 +806,7 @@ function showMeetingDetail(meetingId) {
             </div>
         </div>
         
-        <div class="card">
+        <div class="card section" id="minutes-section">
             <h3>会议记录</h3>
             <div style="margin-top: 1rem;">
                 <textarea style="width: 100%; min-height: 150px; padding: 0.5rem; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 1rem; resize: vertical;">
@@ -823,7 +819,7 @@ ${mockMeeting.notes}
             </div>
         </div>
         
-        <div class="card">
+        <div class="card section" id="attachments-section">
             <h3>会议附件</h3>
             <div style="margin-top: 1rem;">
                 ${mockMeeting.attachments.length > 0 ? `
@@ -872,6 +868,83 @@ function checkIn(meetingId) {
     alert(`会议 ${meetingId} 签到成功`);
     // 这里可以添加签到的逻辑
 }
+
+// 平滑滚动到指定区域
+function scrollToSection(sectionId) {
+    event.preventDefault();
+    const element = document.getElementById(sectionId);
+    const contentContainer = document.querySelector('.meeting-main-content');
+    if (element && contentContainer) {
+        // 计算目标元素相对于内容容器的偏移量
+        const elementTop = element.offsetTop;
+        const containerTop = contentContainer.offsetTop;
+        const scrollOffset = elementTop - containerTop;
+        
+        // 平滑滚动内容容器
+        contentContainer.scrollTo({
+            top: scrollOffset,
+            behavior: 'smooth'
+        });
+        
+        // 更新激活的锚点链接
+        updateActiveAnchor(sectionId);
+    }
+}
+
+// 更新激活的锚点链接
+function updateActiveAnchor(activeSectionId) {
+    // 移除所有锚点链接的active类
+    const anchors = document.querySelectorAll('.anchor-nav a');
+    anchors.forEach(anchor => {
+        anchor.classList.remove('active');
+    });
+    
+    // 为当前激活的锚点链接添加active类
+    const activeAnchor = document.querySelector(`.anchor-nav a[href="#${activeSectionId}"]`);
+    if (activeAnchor) {
+        activeAnchor.classList.add('active');
+    }
+}
+
+// 监听滚动事件，更新当前激活的锚点
+function initAnchorScroll() {
+    const meetingDetailPage = document.getElementById('meeting-detail');
+    if (!meetingDetailPage) return;
+    
+    const sections = meetingDetailPage.querySelectorAll('.section');
+    const anchors = document.querySelectorAll('.anchor-nav a');
+    
+    // 滚动监听
+    window.addEventListener('scroll', () => {
+        let current = '';
+        const scrollPosition = window.pageYOffset + 100;
+        
+        // 确定当前滚动位置对应的section
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        // 更新激活状态
+        anchors.forEach(anchor => {
+            anchor.classList.remove('active');
+            if (anchor.getAttribute('href') === `#${current}`) {
+                anchor.classList.add('active');
+            }
+        });
+    });
+    
+    // 初始化第一个锚点为激活状态
+    if (anchors.length > 0) {
+        anchors[0].classList.add('active');
+    }
+}
+
+// 页面加载完成后初始化
+window.addEventListener('load', initAnchorScroll);
 
 // 切换议程区域显示状态
 function toggleAgenda() {
