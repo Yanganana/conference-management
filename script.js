@@ -466,7 +466,8 @@ function renderMeetings() {
                 <span class="status-tag ${meeting.status}">${statusInfo.text}</span>
             </div>
             <div style="display: flex; gap: 0.5rem;">
-                <button class="button secondary" style="flex: 1;" onclick="showMeetingDetail(${meeting.id})">查看详情</button>
+                <button class="button secondary" style="flex: 1;" onclick="showMeetingDetail(${meeting.id})">查看详情（锚点型）</button>
+                <button class="button" style="flex: 1;" onclick="showMeetingDetailTab(${meeting.id})">查看详情（标签页）</button>
             </div>
         `;
         
@@ -543,7 +544,6 @@ function handleMeetingSubmit(e) {
         startTime: formData.get('startTime'),
         endTime: formData.get('endTime'),
         organizer: formData.get('organizer'),
-        负责人: formData.get('负责人'),
         location: formData.get('location'),
         attendees: ["参会人1", "参会人2"],
         agenda: [...agendas],
@@ -675,13 +675,16 @@ function filterMeetings() {
 // 显示会议详情
 function showMeetingDetail(meetingId) {
     // 模拟获取会议详情
+    // 将meetingId转换为数字，确保与标签页版本一致
+    const meetingIdNum = parseInt(meetingId);
     const mockMeeting = {
-        _id: meetingId,
-        title: meetingId === '1' ? '项目启动会议' : '需求评审会议',
-        startTime: meetingId === '1' ? '2025-12-18T10:00:00' : '2025-12-19T14:30:00',
-        endTime: meetingId === '1' ? '2025-12-18T11:30:00' : '2025-12-19T16:00:00',
-        organizer: { name: meetingId === '1' ? '张三' : '李四', email: meetingId === '1' ? 'zhangsan@example.com' : 'lisi@example.com' },
-        负责人: { name: meetingId === '1' ? '李四' : '张三', email: meetingId === '1' ? 'lisi@example.com' : 'zhangsan@example.com' },
+        _id: meetingIdNum,
+        title: meetingIdNum === 1 ? '项目启动会议' : '需求评审会议',
+        startTime: meetingIdNum === 1 ? '2025-12-18T10:00:00' : '2025-12-19T14:30:00',
+        endTime: meetingIdNum === 1 ? '2025-12-18T11:30:00' : '2025-12-19T16:00:00',
+        organizer: { name: meetingIdNum === 1 ? '张三' : '李四', email: meetingIdNum === 1 ? 'zhangsan@example.com' : 'lisi@example.com' },
+        host: { name: meetingIdNum === 1 ? '张三' : '李四', email: meetingIdNum === 1 ? 'zhangsan@example.com' : 'lisi@example.com' },
+        myRole: meetingIdNum === 1 ? '主持人' : '参会人',
         attendees: [
             { user: { _id: '3', name: '王五', email: 'wangwu@example.com' }, status: 'accepted', attended: false },
             { user: { _id: '4', name: '赵六', email: 'zhaoliu@example.com' }, status: 'pending', attended: false }
@@ -718,21 +721,6 @@ function showMeetingDetail(meetingId) {
     
     // 生成会议详情HTML
     const detailContent = `
-        <h2>${mockMeeting.title}</h2>
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <div>
-                <span style="background-color: ${mockMeeting.status === 'notified' ? '#faad14' : '#1890ff'}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">
-                    ${mockMeeting.status === 'notified' ? '已通知' : '进行中'}
-                </span>
-            </div>
-            <div style="display: flex; gap: 1rem;">
-                ${mockMeeting.status === 'notified' ? `<button class="button" onclick="startMeeting('${mockMeeting._id}')">启动会议</button>` : ''}
-                ${mockMeeting.status === 'in_progress' ? `<button class="button" onclick="endMeeting('${mockMeeting._id}')">结束会议</button>` : ''}
-                <button class="button" style="background-color: #52c41a;" onclick="checkIn('${mockMeeting._id}')">签到</button>
-            </div>
-        </div>
-        
         <div class="card section" id="basic-info-section">
             <h3>会议基本信息</h3>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
@@ -753,26 +741,35 @@ function showMeetingDetail(meetingId) {
                     <p>${mockMeeting.organizer.name}</p>
                 </div>
                 <div>
-                    <p style="color: #666; margin-bottom: 0.25rem;">负责人</p>
-                    <p>${mockMeeting.负责人.name}</p>
+                    <p style="color: #666; margin-bottom: 0.25rem;">主持人</p>
+                    <p>${mockMeeting.host.name}</p>
                 </div>
             </div>
         </div>
         
         <div class="card section" id="attendees-section">
-            <h3>参会人列表</h3>
-            <table style="width: 100%; margin-top: 1rem; border-collapse: collapse;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3>参会人列表</h3>
+                ${mockMeeting.myRole === '主持人' || mockMeeting.host.name === '张三' ? `<button class="button" onclick="proxyCheckIn('${mockMeeting._id}')">代签</button>` : ''}
+            </div>
+            <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="border-bottom: 2px solid #e8e8e8;">
+                        ${mockMeeting.myRole === '主持人' || mockMeeting.host.name === '张三' ? `<th style="text-align: left; padding: 0.5rem; width: 40px;">
+                            <input type="checkbox" id="select-all-${mockMeeting._id}" onchange="toggleSelectAll(this, '${mockMeeting._id}')">
+                        </th>` : ''}
                         <th style="text-align: left; padding: 0.5rem;">姓名</th>
                         <th style="text-align: left; padding: 0.5rem;">邮箱</th>
-                        <th style="text-align: left; padding: 0.5rem;">状态</th>
-                        <th style="text-align: left; padding: 0.5rem;">是否参会</th>
+                        <th style="text-align: left; padding: 0.5rem;">参与状态</th>
+                        <th style="text-align: left; padding: 0.5rem;">签到状态</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${mockMeeting.attendees.map(attendee => `
                         <tr style="border-bottom: 1px solid #f0f0f0;">
+                            ${mockMeeting.myRole === '主持人' || mockMeeting.host.name === '张三' ? `<td style="padding: 0.5rem;">
+                                <input type="checkbox" class="attendee-checkbox" data-meeting-id="${mockMeeting._id}" data-attendee-id="${attendee.user._id}">
+                            </td>` : ''}
                             <td style="padding: 0.5rem;">${attendee.user.name}</td>
                             <td style="padding: 0.5rem;">${attendee.user.email}</td>
                             <td style="padding: 0.5rem;">
@@ -904,6 +901,259 @@ function updateActiveAnchor(activeSectionId) {
     if (activeAnchor) {
         activeAnchor.classList.add('active');
     }
+}
+
+// 标签页切换函数
+function switchTab(tabId) {
+    // 隐藏所有标签页内容
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // 移除所有标签页按钮的active类
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    // 显示目标标签页内容
+    const targetContent = document.getElementById(tabId);
+    if (targetContent) {
+        targetContent.classList.add('active');
+    }
+    
+    // 添加active类到目标标签页按钮
+    const targetButton = event.target;
+    if (targetButton) {
+        targetButton.classList.add('active');
+    }
+}
+
+// 显示会议详情（标签页型）
+function showMeetingDetailTab(meetingId) {
+    // 模拟获取会议详情
+    const mockMeeting = {
+        _id: meetingId,
+        title: meetingId === 1 ? '项目启动会议' : '需求评审会议',
+        startTime: meetingId === 1 ? '2025-12-18T10:00:00' : '2025-12-19T14:30:00',
+        endTime: meetingId === 1 ? '2025-12-18T11:30:00' : '2025-12-19T16:00:00',
+        organizer: { name: meetingId === 1 ? '张三' : '李四', email: meetingId === 1 ? 'zhangsan@example.com' : 'lisi@example.com' },
+        host: { name: meetingId === 1 ? '张三' : '李四', email: meetingId === 1 ? 'zhangsan@example.com' : 'lisi@example.com' },
+        负责人: { name: meetingId === 1 ? '李四' : '张三', email: meetingId === 1 ? 'lisi@example.com' : 'zhangsan@example.com' },
+        attendees: [
+            { user: { _id: '3', name: '王五', email: 'wangwu@example.com' }, status: 'accepted', attended: false },
+            { user: { _id: '4', name: '赵六', email: 'zhaoliu@example.com' }, status: 'pending', attended: false }
+        ],
+        agenda: [
+            {
+                title: '项目背景介绍',
+                startTime: meetingId === 1 ? '2025-12-18T10:00:00' : '2025-12-19T14:30:00',
+                endTime: meetingId === 1 ? '2025-12-18T10:30:00' : '2025-12-19T15:00:00',
+                description: '介绍项目的背景和意义'
+            },
+            {
+                title: '团队分工',
+                startTime: meetingId === 1 ? '2025-12-18T10:30:00' : '2025-12-19T15:00:00',
+                endTime: meetingId === 1 ? '2025-12-18T11:00:00' : '2025-12-19T15:30:00',
+                description: '确定团队成员的分工和职责'
+            },
+            {
+                title: '时间规划',
+                startTime: meetingId === 1 ? '2025-12-18T11:00:00' : '2025-12-19T15:30:00',
+                endTime: meetingId === 1 ? '2025-12-18T11:30:00' : '2025-12-19T16:00:00',
+                description: '制定项目的时间规划和里程碑'
+            }
+        ],
+        attachments: [
+            { name: '项目计划书.pdf', url: '#', size: 2048000, uploadTime: '2025-12-17T10:00:00' },
+            { name: '团队成员名单.xlsx', url: '#', size: 512000, uploadTime: '2025-12-17T11:00:00' }
+        ],
+        location: meetingId === 1 ? '会议室A' : '会议室B',
+        status: meetingId === 1 ? 'notified' : 'in_progress',
+        notes: '这是会议的实时记录...',
+        recordingUrl: ''
+    };
+    
+    // 生成会议基本信息HTML
+    const basicInfoHtml = `
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+            <div>
+                <p style="color: #666; margin-bottom: 0.25rem;">开始时间</p>
+                <p>${new Date(mockMeeting.startTime).toLocaleString()}</p>
+            </div>
+            <div>
+                <p style="color: #666; margin-bottom: 0.25rem;">结束时间</p>
+                <p>${new Date(mockMeeting.endTime).toLocaleString()}</p>
+            </div>
+            <div>
+                <p style="color: #666; margin-bottom: 0.25rem;">地点</p>
+                <p>${mockMeeting.location}</p>
+            </div>
+            <div>
+                <p style="color: #666; margin-bottom: 0.25rem;">召集人</p>
+                <p>${mockMeeting.organizer.name}</p>
+            </div>
+            <div>
+                <p style="color: #666; margin-bottom: 0.25rem;">主持人</p>
+                <p>${mockMeeting.host.name}</p>
+            </div>
+        </div>
+    `;
+    
+    // 生成参会人列表HTML
+    const attendeesHtml = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="margin: 0;">参会人列表</h3>
+            ${mockMeeting.host.name === '张三' ? `<button class="button" onclick="proxyCheckIn(${meetingId})">代签</button>` : ''}
+        </div>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid #e8e8e8;">
+                    ${mockMeeting.host.name === '张三' ? `<th style="text-align: left; padding: 0.5rem; width: 40px;">
+                        <input type="checkbox" id="select-all-${meetingId}" onchange="toggleSelectAll(this, '${meetingId}')">
+                    </th>` : ''}
+                    <th style="text-align: left; padding: 0.5rem;">姓名</th>
+                    <th style="text-align: left; padding: 0.5rem;">邮箱</th>
+                    <th style="text-align: left; padding: 0.5rem;">参与状态</th>
+                    <th style="text-align: left; padding: 0.5rem;">签到状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${mockMeeting.attendees.map(attendee => `
+                    <tr style="border-bottom: 1px solid #f0f0f0;">
+                        ${mockMeeting.host.name === '张三' ? `<td style="padding: 0.5rem;">
+                            <input type="checkbox" class="attendee-checkbox" data-meeting-id="${meetingId}" data-attendee-id="${attendee.user._id}">
+                        </td>` : ''}
+                        <td style="padding: 0.5rem;">${attendee.user.name}</td>
+                        <td style="padding: 0.5rem;">${attendee.user.email}</td>
+                        <td style="padding: 0.5rem;">
+                            <span style="background-color: ${attendee.status === 'accepted' ? '#f6ffed' : '#fffbe6'}; color: ${attendee.status === 'accepted' ? '#52c41a' : '#faad14'}; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">
+                                ${attendee.status === 'accepted' ? '已接受' : '待确认'}
+                            </span>
+                        </td>
+                        <td style="padding: 0.5rem;">
+                            <span style="color: ${attendee.attended ? '#52c41a' : '#ff4d4f'}; font-size: 0.8rem;">
+                                ${attendee.attended ? '已参会' : '未参会'}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+    
+    // 生成会议议程HTML
+    const agendaHtml = `
+        <div class="timeline" style="margin-top: 1rem;">
+            ${mockMeeting.agenda.map((agenda, index) => `
+                <div class="timeline-item">
+                    <h4>${agenda.title}</h4>
+                    <p style="color: #666; font-size: 0.9rem; margin: 0.25rem 0;">
+                        ${new Date(agenda.startTime).toLocaleString()} - ${new Date(agenda.endTime).toLocaleString()}
+                    </p>
+                    ${agenda.description ? `<p style="color: #666; font-size: 0.9rem;">${agenda.description}</p>` : ''}
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    // 生成会议记录HTML
+    const minutesHtml = `
+        <div style="margin-top: 1rem;">
+            <textarea style="width: 100%; min-height: 150px; padding: 0.5rem; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 1rem; resize: vertical;">
+${mockMeeting.notes}
+            </textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                <button class="button secondary">保存记录</button>
+                <button class="button">上传录音</button>
+            </div>
+        </div>
+    `;
+    
+    // 生成会议附件HTML
+    const attachmentsHtml = `
+        <div style="margin-top: 1rem;">
+            ${mockMeeting.attachments.length > 0 ? `
+                <ul style="list-style: none; padding: 0;">
+                    ${mockMeeting.attachments.map(attachment => `
+                        <li style="padding: 0.5rem; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <a href="${attachment.url}" style="text-decoration: none; color: #1890ff;">${attachment.name}</a>
+                                <p style="color: #666; font-size: 0.8rem; margin: 0.25rem 0;">
+                                    ${(attachment.size / 1024).toFixed(2)} KB · ${new Date(attachment.uploadTime).toLocaleString()}
+                                </p>
+                            </div>
+                            <button class="button secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">下载</button>
+                        </li>
+                    `).join('')}
+                </ul>
+            ` : '<p style="color: #8c8c8c; text-align: center; padding: 1rem;">暂无附件</p>'}
+        </div>
+    `;
+    
+    // 更新会议标题
+    const meetingTitle = document.querySelector('#meeting-detail-tab .meeting-title');
+    if (meetingTitle) {
+        meetingTitle.textContent = mockMeeting.title;
+    }
+    
+    // 更新会议状态
+    const statusTag = document.querySelector('#meeting-detail-tab .status-tag');
+    if (statusTag) {
+        statusTag.textContent = mockMeeting.status === 'notified' ? '已通知' : '进行中';
+        statusTag.className = `status-tag ${mockMeeting.status}`;
+    }
+    
+    // 更新会议详情内容
+    const basicInfoSection = document.getElementById('basic-info-section-tab');
+    const attendeesSection = document.getElementById('attendees-section-tab');
+    const agendaSection = document.getElementById('agenda-section-tab');
+    const minutesSection = document.getElementById('minutes-section-tab');
+    const attachmentsSection = document.getElementById('attachments-section-tab');
+    
+    if (basicInfoSection) {
+        const basicInfoCard = basicInfoSection.querySelector('.card');
+        if (basicInfoCard) {
+            // 保留h3标题，添加内容
+            const title = basicInfoCard.querySelector('h3');
+            basicInfoCard.innerHTML = title ? `${title.outerHTML}${basicInfoHtml}` : `<h3>会议基本信息</h3>${basicInfoHtml}`;
+        }
+    }
+    
+    if (attendeesSection) {
+        const attendeesCard = attendeesSection.querySelector('.card');
+        if (attendeesCard) {
+            attendeesCard.innerHTML = attendeesHtml;
+        }
+    }
+    
+    if (agendaSection) {
+        const agendaCard = agendaSection.querySelector('.card');
+        if (agendaCard) {
+            const title = agendaCard.querySelector('h3');
+            agendaCard.innerHTML = title ? `${title.outerHTML}${agendaHtml}` : `<h3>会议议程</h3>${agendaHtml}`;
+        }
+    }
+    
+    if (minutesSection) {
+        const minutesCard = minutesSection.querySelector('.card');
+        if (minutesCard) {
+            const title = minutesCard.querySelector('h3');
+            minutesCard.innerHTML = title ? `${title.outerHTML}${minutesHtml}` : `<h3>会议记录</h3>${minutesHtml}`;
+        }
+    }
+    
+    if (attachmentsSection) {
+        const attachmentsCard = attachmentsSection.querySelector('.card');
+        if (attachmentsCard) {
+            const title = attachmentsCard.querySelector('h3');
+            attachmentsCard.innerHTML = title ? `${title.outerHTML}${attachmentsHtml}` : `<h3>会议附件</h3>${attachmentsHtml}`;
+        }
+    }
+    
+    // 显示会议详情页面
+    showPage('meeting-detail-tab');
 }
 
 // 监听滚动事件，更新当前激活的锚点
@@ -1178,6 +1428,196 @@ function saveEditedAgendaTemplate() {
     
     // 显示成功提示
     alert('议程模板编辑成功！');
+}
+
+// 全局变量 - 当前拒绝的会议名称
+let currentDecliningMeeting = '';
+
+// 打开拒绝参加会议模态弹窗
+function openDeclineMeetingModal(meetingName, time, location, organizer, host = '暂无') {
+    // 保存当前会议名称
+    currentDecliningMeeting = meetingName;
+    
+    // 更新模态弹窗中的会议信息
+    const meetingNameElement = document.getElementById('decline-meeting-name');
+    const meetingTimeElement = document.getElementById('decline-meeting-time');
+    const meetingLocationElement = document.getElementById('decline-meeting-location');
+    const meetingOrganizerElement = document.getElementById('decline-meeting-organizer');
+    const meetingHostElement = document.getElementById('decline-meeting-host');
+    
+    if (meetingNameElement) {
+        meetingNameElement.textContent = meetingName;
+    }
+    if (meetingTimeElement) {
+        meetingTimeElement.textContent = time;
+    }
+    if (meetingLocationElement) {
+        meetingLocationElement.textContent = location;
+    }
+    if (meetingOrganizerElement) {
+        meetingOrganizerElement.textContent = organizer;
+    }
+    if (meetingHostElement) {
+        meetingHostElement.textContent = host;
+    }
+    
+    // 重置表单
+    const declineReasonElement = document.getElementById('decline-reason');
+    const errorElement = document.getElementById('decline-reason-error');
+    if (declineReasonElement) {
+        declineReasonElement.value = '';
+    }
+    if (errorElement) {
+        errorElement.style.display = 'none';
+    }
+    
+    // 显示模态弹窗
+    const modal = document.getElementById('decline-meeting-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // 禁止背景滚动
+    }
+}
+
+// 关闭拒绝参加会议模态弹窗
+function closeDeclineMeetingModal() {
+    const modal = document.getElementById('decline-meeting-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // 恢复背景滚动
+    }
+    
+    // 清空当前会议名称
+    currentDecliningMeeting = '';
+}
+
+// 提交拒绝参加会议
+function submitDeclineMeeting() {
+    // 获取表单数据
+    const declineReasonElement = document.getElementById('decline-reason');
+    const errorElement = document.getElementById('decline-reason-error');
+    const submitButton = document.querySelector('#decline-meeting-modal .modal-footer .button:not(.secondary)');
+    
+    if (!declineReasonElement || !errorElement) {
+        return;
+    }
+    
+    const reason = declineReasonElement.value.trim();
+    
+    // 表单验证
+    if (!reason) {
+        errorElement.style.display = 'block';
+        return;
+    }
+    
+    // 隐藏错误提示
+    errorElement.style.display = 'none';
+    
+    // 显示加载状态
+    const originalButtonText = submitButton.textContent;
+    submitButton.textContent = '提交中...';
+    submitButton.disabled = true;
+    
+    // 模拟API请求
+    setTimeout(() => {
+        // 模拟成功响应
+        const success = Math.random() > 0.1; // 90%成功概率
+        
+        if (success) {
+            // 显示成功提示
+            alert(`已成功拒绝参加会议：${currentDecliningMeeting}`);
+            
+            // 关闭模态弹窗
+            closeDeclineMeetingModal();
+            
+            // 这里可以添加刷新会议列表的逻辑
+            // refreshMeetingList();
+        } else {
+            // 显示失败提示
+            alert('拒绝参加会议失败，请稍后重试');
+        }
+        
+        // 恢复按钮状态
+        submitButton.textContent = originalButtonText;
+        submitButton.disabled = false;
+    }, 1500);
+}
+
+// 批量代签功能
+
+// 切换全选/取消全选
+function toggleSelectAll(checkbox, meetingId) {
+    const checkboxes = document.querySelectorAll(`.attendee-checkbox[data-meeting-id="${meetingId}"]`);
+    checkboxes.forEach(cb => {
+        cb.checked = checkbox.checked;
+    });
+}
+
+// 代签功能
+function proxyCheckIn(meetingId) {
+    const checkboxes = document.querySelectorAll(`.attendee-checkbox[data-meeting-id="${meetingId}"]:checked`);
+    const selectedAttendees = Array.from(checkboxes).map(cb => cb.dataset.attendeeId);
+    
+    if (selectedAttendees.length === 0) {
+        alert('请先选择需要代签的参会人');
+        return;
+    }
+    
+    // 模拟代签操作
+    alert(`已为 ${selectedAttendees.length} 位参会人完成代签`);
+    
+    // 这里可以添加实际的代签逻辑，例如更新后端数据
+    console.log(`为会议 ${meetingId} 的参会人 ${selectedAttendees.join(', ')} 进行代签`);
+    
+    // 刷新参会人列表，显示更新后的参会状态
+    if (currentPage === 'meeting-detail') {
+        showMeetingDetail(parseInt(meetingId));
+    } else if (currentPage === 'meeting-detail-tab') {
+        showMeetingDetailTab(parseInt(meetingId));
+    }
+}
+
+// 显示批量代签对话框
+function showBulkCheckInDialog() {
+    const dialog = document.getElementById('bulk-checkin-dialog');
+    if (dialog) {
+        dialog.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // 禁止背景滚动
+    }
+}
+
+// 关闭批量代签对话框
+function closeBulkCheckInDialog() {
+    const dialog = document.getElementById('bulk-checkin-dialog');
+    if (dialog) {
+        dialog.style.display = 'none';
+        document.body.style.overflow = 'auto'; // 恢复背景滚动
+    }
+}
+
+// 执行批量代签操作
+function bulkCheckIn() {
+    const checkboxes = document.querySelectorAll('#bulk-checkin-dialog input[type="checkbox"]:checked');
+    const selectedAttendees = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (selectedAttendees.length === 0) {
+        alert('请先选择需要代签的参会人');
+        return;
+    }
+    
+    // 模拟代签操作
+    alert(`已为 ${selectedAttendees.length} 位参会人完成代签`);
+    
+    // 这里可以添加实际的代签逻辑，例如更新后端数据
+    console.log(`为参会人 ${selectedAttendees.join(', ')} 进行代签`);
+    
+    // 关闭对话框
+    closeBulkCheckInDialog();
+    
+    // 刷新会议详情页面，显示更新后的参会状态
+    // 由于会议详情是动态生成的，这里需要重新调用showMeetingDetail或showMeetingDetailTab函数
+    // 但由于我们没有保存当前会议ID，所以暂时只关闭对话框
+    // 实际应用中，应该保存当前会议ID，然后重新加载会议详情
 }
 
 // 页面加载完成后初始化

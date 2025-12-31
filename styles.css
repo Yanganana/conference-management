@@ -675,6 +675,51 @@ h4 {
   white-space: nowrap;
 }
 
+/* 标签页导航样式 */
+.tab-nav {
+  display: flex;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 20px;
+}
+
+/* 标签页按钮样式 */
+.tab-button {
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #66676b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+  margin-right: 8px;
+}
+
+/* 激活标签页按钮样式 */
+.tab-button.active {
+  color: #1890ff;
+  border-bottom-color: #1890ff;
+  background-color: rgba(24, 144, 255, 0.05);
+}
+
+/* 标签页按钮悬停样式 */
+.tab-button:hover {
+  color: #1890ff;
+  background-color: rgba(24, 144, 255, 0.05);
+}
+
+/* 标签页内容样式 */
+.tab-content {
+  display: none;
+}
+
+/* 激活标签页内容样式 */
+.tab-content.active {
+  display: block;
+}
+
 /* 为所有会议详情页面滚动区域添加自定义滚动条样式 */
 .anchor-nav::-webkit-scrollbar,
 .meeting-content-wrapper::-webkit-scrollbar,
@@ -1217,7 +1262,7 @@ tr:hover {
   bottom: 0;
   left: 0;
   z-index: 1100;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   animation: modalFadeIn 0.3s ease;
