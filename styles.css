@@ -5,8 +5,10 @@
   box-sizing: border-box;
 }
 
-/* 飞书字体 */
-body {
+/* 移除最外层滚动条 */
+html, body {
+  overflow: hidden !important;
+  height: 100% !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -22,6 +24,7 @@ body {
 .app {
   display: flex;
   flex-direction: column;
+  height: 100% !important;
   min-height: 100vh;
 }
 
@@ -34,6 +37,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .header h1 {
@@ -56,6 +60,34 @@ body {
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
   padding: 0;
   border-right: 1px solid #e5e6eb;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+/* 自定义滚动条样式 */
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Firefox 滚动条样式 */
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
 }
 
 .sidebar ul {
@@ -99,6 +131,35 @@ body {
   background-color: #f7f8fa;
   max-width: 1800px;
   margin: 0 auto;
+  box-sizing: border-box;
+  /* 添加明确的高度约束，确保滚动条能正常显示 */
+  max-height: calc(100vh - 64px); /* 64px 是 header 的高度 */
+}
+
+/* 自定义滚动条样式 */
+.content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Firefox 滚动条样式 */
+.content {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
 }
 
 /* 页面切换 */
@@ -108,6 +169,7 @@ body {
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  min-height: 100%;
 }
 
 .page.active {
@@ -505,7 +567,7 @@ h4 {
   margin: 0;
   display: none;
   min-height: 600px;
-  height: 100vh;
+  height: 100%;
 }
 
 #meeting-detail.active {
@@ -523,7 +585,7 @@ h4 {
   position: sticky;
   top: 0;
   align-self: flex-start;
-  height: 100vh;
+  height: 100%;
   box-sizing: border-box;
 }
 
@@ -532,7 +594,7 @@ h4 {
   flex: 1;
   padding: 0;
   overflow-y: auto;
-  height: 100vh;
+  height: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -611,6 +673,42 @@ h4 {
 /* 确保按钮在操作栏中正确排列 */
 .meeting-top-bar .button {
   white-space: nowrap;
+}
+
+/* 为所有会议详情页面滚动区域添加自定义滚动条样式 */
+.anchor-nav::-webkit-scrollbar,
+.meeting-content-wrapper::-webkit-scrollbar,
+.meeting-main-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.anchor-nav::-webkit-scrollbar-track,
+.meeting-content-wrapper::-webkit-scrollbar-track,
+.meeting-main-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.anchor-nav::-webkit-scrollbar-thumb,
+.meeting-content-wrapper::-webkit-scrollbar-thumb,
+.meeting-main-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.anchor-nav::-webkit-scrollbar-thumb:hover,
+.meeting-content-wrapper::-webkit-scrollbar-thumb:hover,
+.meeting-main-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Firefox 滚动条样式 */
+.anchor-nav,
+.meeting-content-wrapper,
+.meeting-main-content {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
 }
 
 .anchor-nav ul {
