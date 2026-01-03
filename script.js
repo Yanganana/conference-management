@@ -155,6 +155,11 @@ function showPage(pageId) {
         
         // 保存当前选中状态到localStorage
         localStorage.setItem('activePage', pageId);
+        
+        // 如果是会议列表页面，重新渲染会议列表
+        if (pageId === 'meetings') {
+            renderMeetings();
+        }
     }
 }
 
@@ -439,10 +444,15 @@ function init() {
     initMockData();
 }
 
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', init);
+
 // 渲染会议列表
 function renderMeetings() {
     const meetingsGrid = document.querySelector('.meetings-grid');
-    if (!meetingsGrid) return;
+    if (!meetingsGrid) {
+        return;
+    }
     
     // 清空现有内容
     meetingsGrid.innerHTML = '';
@@ -459,7 +469,8 @@ function renderMeetings() {
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                 <div>
                     <h3>${meeting.title}</h3>
-                    <p style="color: #666; margin: 0.5rem 0;">${meeting.time}</p>
+                    <p style="color: #666; margin: 0.5rem 0;">时间: ${meeting.time}</p>
+                    <p style="color: #666; margin: 0.5rem 0;">地点: ${meeting.location}</p>
                     <p style="color: #666; margin: 0.5rem 0;">召集人: ${meeting.organizer}</p>
                     <p style="color: #666; margin: 0.5rem 0;">参会人数: ${meeting.attendees.length}</p>
                 </div>
@@ -484,9 +495,57 @@ function getMeetingStatusInfo(status) {
         'ended': { text: '已结束', class: 'ended' },
         'cancelled': { text: '已取消', class: 'cancelled' },
         'archived': { text: '已归档', class: 'archived' },
-        'pending_confirmation': { text: '待确认', class: 'pending_confirmation' }
+        'pending_confirmation': { text: '待确认', class: 'pending_confirmation' },
+        'notified': { text: '已通知', class: 'notified' },
+        'decision_confirming': { text: '决议确认中', class: 'decision_confirming' }
     };
     return statusMap[status] || { text: '未知', class: '' };
+}
+
+// 生成会议操作按钮
+function generateMeetingActions(meetingId, status) {
+    let actions = '';
+    if (status === 'not_started' || status === 'notified' || status === 'pending_confirmation') {
+        actions = `
+            <button class="button" onclick="startMeeting(${meetingId})">开始会议</button>
+            <button class="button secondary" onclick="cancelMeeting(${meetingId})">取消会议</button>
+        `;
+    } else if (status === 'in_progress' || status === 'decision_confirming') {
+        actions = `
+            <button class="button" onclick="endMeeting(${meetingId})">结束会议</button>
+            <button class="button secondary" onclick="checkIn(${meetingId})">签到</button>
+        `;
+    } else if (status === 'ended') {
+        actions = `
+            <button class="button secondary" onclick="archiveMeeting(${meetingId})">归档会议</button>
+        `;
+    } else if (status === 'cancelled' || status === 'archived') {
+        actions = `
+            <button class="button secondary" onclick="deleteMeeting(${meetingId})">删除会议</button>
+        `;
+    }
+    return actions;
+}
+
+// 更新会议顶部操作栏
+function updateMeetingTopBar(meeting) {
+    // 更新锚点型会议详情页面的顶部操作栏
+    const anchorTopBar = document.querySelector('#meeting-detail .meeting-top-bar');
+    if (anchorTopBar) {
+        anchorTopBar.querySelector('.meeting-title').textContent = meeting.title;
+        anchorTopBar.querySelector('.status-tag').className = `status-tag ${meeting.status}`;
+        anchorTopBar.querySelector('.status-tag').textContent = getMeetingStatusInfo(meeting.status).text;
+        anchorTopBar.querySelector('.meeting-actions').innerHTML = generateMeetingActions(meeting.id, meeting.status);
+    }
+    
+    // 更新标签页型会议详情页面的顶部操作栏
+    const tabTopBar = document.querySelector('#meeting-detail-tab .meeting-top-bar');
+    if (tabTopBar) {
+        tabTopBar.querySelector('.meeting-title').textContent = meeting.title;
+        tabTopBar.querySelector('.status-tag').className = `status-tag ${meeting.status}`;
+        tabTopBar.querySelector('.status-tag').textContent = getMeetingStatusInfo(meeting.status).text;
+        tabTopBar.querySelector('.meeting-actions').innerHTML = generateMeetingActions(meeting.id, meeting.status);
+    }
 }
 
 // 初始化模拟数据
@@ -654,13 +713,12 @@ function filterMeetings() {
     
     meetingCards.forEach(card => {
         const title = card.querySelector('h3').textContent.toLowerCase();
-        const status = card.querySelector('span').textContent;
+        const statusElement = card.querySelector('span');
+        const statusText = statusElement.textContent;
+        const statusClass = statusElement.className.replace('status-tag ', '');
         
         let matchesSearch = title.includes(searchTerm);
-        let matchesStatus = filterStatus === 'all' || 
-                           (filterStatus === 'notified' && status === '已通知') ||
-                           (filterStatus === 'in_progress' && status === '进行中') ||
-                           (filterStatus === 'decision_confirming' && status === '决议确认中');
+        let matchesStatus = filterStatus === 'all' || filterStatus === statusClass;
         
         if (matchesSearch && matchesStatus) {
             card.style.display = 'block';
@@ -686,8 +744,36 @@ function showMeetingDetail(meetingId) {
         host: { name: meetingIdNum === 1 ? '张三' : '李四', email: meetingIdNum === 1 ? 'zhangsan@example.com' : 'lisi@example.com' },
         myRole: meetingIdNum === 1 ? '主持人' : '参会人',
         attendees: [
-            { user: { _id: '3', name: '王五', email: 'wangwu@example.com' }, status: 'accepted', attended: false },
-            { user: { _id: '4', name: '赵六', email: 'zhaoliu@example.com' }, status: 'pending', attended: false }
+            { user: { _id: '3', name: '王五', email: 'wangwu@example.com' }, status: 'accepted', attended: true },
+            { user: { _id: '4', name: '赵六', email: 'zhaoliu@example.com' }, status: 'pending', attended: false },
+            { user: { _id: '5', name: '孙七', email: 'sunqi@example.com' }, status: 'accepted', attended: true },
+            { user: { _id: '6', name: '周八', email: 'zhouba@example.com' }, status: 'accepted', attended: true }
+        ],
+        resolutions: [
+            {
+                id: 1,
+                content: '项目启动会议决议：同意项目进入开发阶段',
+                time: '2025-12-18T11:30:00',
+                creator: '张三',
+                attendeeStatus: [
+                    { userId: '3', name: '王五', status: '同意', description: '支持项目进入开发阶段' },
+                    { userId: '4', name: '赵六', status: '未表态', description: '' },
+                    { userId: '5', name: '孙七', status: '同意', description: '同意决议，建议加快进度' },
+                    { userId: '6', name: '周八', status: '弃权', description: '暂不表态' }
+                ]
+            },
+            {
+                id: 2,
+                content: '需求评审会议决议：通过需求文档，同意进入设计阶段',
+                time: '2025-12-19T16:00:00',
+                creator: '李四',
+                attendeeStatus: [
+                    { userId: '3', name: '王五', status: '不同意', description: '需求文档存在部分问题，建议修改后再通过' },
+                    { userId: '4', name: '赵六', status: '未表态', description: '' },
+                    { userId: '5', name: '孙七', status: '同意', description: '需求文档符合预期，同意进入设计阶段' },
+                    { userId: '6', name: '周八', status: '同意', description: '同意决议' }
+                ]
+            }
         ],
         agenda: [
             {
@@ -719,6 +805,42 @@ function showMeetingDetail(meetingId) {
         recordingUrl: ''
     };
     
+    // 根据会议状态生成操作按钮
+    let meetingActions = '';
+    if (mockMeeting.status === 'not_started' || mockMeeting.status === 'notified' || mockMeeting.status === 'pending_confirmation') {
+        meetingActions = `
+            <div class="meeting-actions" style="margin-top: 1rem;">
+                <button class="button" onclick="startMeeting('${mockMeeting._id}')">开始会议</button>
+                <button class="button secondary" onclick="cancelMeeting('${mockMeeting._id}')">取消会议</button>
+            </div>
+        `;
+    } else if (mockMeeting.status === 'in_progress' || mockMeeting.status === 'decision_confirming') {
+        meetingActions = `
+            <div class="meeting-actions" style="margin-top: 1rem;">
+                <button class="button" onclick="endMeeting('${mockMeeting._id}')">结束会议</button>
+                <button class="button secondary" onclick="checkIn('${mockMeeting._id}')">签到</button>
+            </div>
+        `;
+    } else if (mockMeeting.status === 'ended') {
+        meetingActions = `
+            <div class="meeting-actions" style="margin-top: 1rem;">
+                <button class="button secondary" onclick="archiveMeeting('${mockMeeting._id}')">归档会议</button>
+            </div>
+        `;
+    } else if (mockMeeting.status === 'cancelled') {
+        meetingActions = `
+            <div class="meeting-actions" style="margin-top: 1rem;">
+                <button class="button secondary" onclick="deleteMeeting('${mockMeeting._id}')">删除会议</button>
+            </div>
+        `;
+    } else if (mockMeeting.status === 'archived') {
+        meetingActions = `
+            <div class="meeting-actions" style="margin-top: 1rem;">
+                <button class="button secondary" onclick="deleteMeeting('${mockMeeting._id}')">删除会议</button>
+            </div>
+        `;
+    }
+    
     // 生成会议详情HTML
     const detailContent = `
         <div class="card section" id="basic-info-section">
@@ -744,7 +866,12 @@ function showMeetingDetail(meetingId) {
                     <p style="color: #666; margin-bottom: 0.25rem;">主持人</p>
                     <p>${mockMeeting.host.name}</p>
                 </div>
+                <div>
+                    <p style="color: #666; margin-bottom: 0.25rem;">会议状态</p>
+                    <span class="status-tag ${mockMeeting.status}">${getMeetingStatusInfo(mockMeeting.status).text}</span>
+                </div>
             </div>
+            ${meetingActions}
         </div>
         
         <div class="card section" id="attendees-section">
@@ -836,12 +963,57 @@ ${mockMeeting.notes}
                 ` : '<p style="color: #8c8c8c; text-align: center; padding: 1rem;">暂无附件</p>'}
             </div>
         </div>
+        
+        <div class="card section" id="resolutions-section">
+            <h3>会议决议</h3>
+            ${mockMeeting.resolutions.map(resolution => `
+                <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #fafafa; border-radius: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <p style="color: #333; margin: 0; font-weight: 500; font-size: 1.1rem;">${resolution.content}</p>
+                        <span style="color: #1890ff; font-size: 0.8rem;">${new Date(resolution.time).toLocaleString()}</span>
+                    </div>
+                    <p style="color: #666; margin: 0.5rem 0 1.5rem 0; font-size: 0.8rem;">创建人: ${resolution.creator}</p>
+                    
+                    <h4 style="margin: 0 0 1rem 0;">参会人决议状态</h4>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #e8e8e8;">
+                                <th style="text-align: left; padding: 0.5rem;">姓名</th>
+                                <th style="text-align: left; padding: 0.5rem;">决议状态</th>
+                                <th style="text-align: left; padding: 0.5rem;">决议说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${resolution.attendeeStatus.map(status => `
+                                <tr style="border-bottom: 1px solid #f0f0f0;">
+                                    <td style="padding: 0.5rem;">${status.name}</td>
+                                    <td style="padding: 0.5rem;">
+                                        <span style="background-color: ${status.status === '同意' ? '#f6ffed' : status.status === '不同意' ? '#fff2f0' : status.status === '弃权' ? '#f9f0ff' : '#fffbe6'}; color: ${status.status === '同意' ? '#52c41a' : status.status === '不同意' ? '#ff4d4f' : status.status === '弃权' ? '#722ed1' : '#faad14'}; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">
+                                            ${status.status}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 0.5rem; color: #666;">${status.description || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `).join('')}
+            <button class="button secondary">添加决议</button>
+        </div>
     `;
     
     // 更新会议详情内容
     const detailContainer = document.getElementById('meeting-detail-content');
     if (detailContainer) {
         detailContainer.innerHTML = detailContent;
+    }
+    
+    // 从会议数组中查找对应的会议
+    const meeting = meetings.find(m => m.id === meetingIdNum);
+    if (meeting) {
+        // 更新顶部操作栏
+        updateMeetingTopBar(meeting);
     }
     
     // 显示会议详情页面
@@ -864,6 +1036,113 @@ function endMeeting(meetingId) {
 function checkIn(meetingId) {
     alert(`会议 ${meetingId} 签到成功`);
     // 这里可以添加签到的逻辑
+}
+
+// 开始会议
+function startMeeting(meetingId) {
+    // 找到对应的会议
+    const meetingIndex = meetings.findIndex(m => m.id === parseInt(meetingId));
+    if (meetingIndex !== -1) {
+        // 更新会议状态
+        meetings[meetingIndex].status = 'in_progress';
+        const updatedMeeting = meetings[meetingIndex];
+        
+        // 更新界面
+        updateMeetingTopBar(updatedMeeting);
+        if (currentPage === 'meeting-detail') {
+            showMeetingDetail(parseInt(meetingId));
+        } else if (currentPage === 'meeting-detail-tab') {
+            showMeetingDetailTab(parseInt(meetingId));
+        }
+        
+        // 显示成功提示
+        alert(`会议 ${meetingId} 已成功开始`);
+    }
+}
+
+// 结束会议
+function endMeeting(meetingId) {
+    // 找到对应的会议
+    const meetingIndex = meetings.findIndex(m => m.id === parseInt(meetingId));
+    if (meetingIndex !== -1) {
+        // 更新会议状态
+        meetings[meetingIndex].status = 'ended';
+        const updatedMeeting = meetings[meetingIndex];
+        
+        // 更新界面
+        updateMeetingTopBar(updatedMeeting);
+        if (currentPage === 'meeting-detail') {
+            showMeetingDetail(parseInt(meetingId));
+        } else if (currentPage === 'meeting-detail-tab') {
+            showMeetingDetailTab(parseInt(meetingId));
+        }
+        
+        // 显示成功提示
+        alert(`会议 ${meetingId} 已成功结束`);
+    }
+}
+
+// 取消会议
+function cancelMeeting(meetingId) {
+    // 找到对应的会议
+    const meetingIndex = meetings.findIndex(m => m.id === parseInt(meetingId));
+    if (meetingIndex !== -1) {
+        // 更新会议状态
+        meetings[meetingIndex].status = 'cancelled';
+        const updatedMeeting = meetings[meetingIndex];
+        
+        // 更新界面
+        updateMeetingTopBar(updatedMeeting);
+        if (currentPage === 'meeting-detail') {
+            showMeetingDetail(parseInt(meetingId));
+        } else if (currentPage === 'meeting-detail-tab') {
+            showMeetingDetailTab(parseInt(meetingId));
+        }
+        
+        // 显示成功提示
+        alert(`会议 ${meetingId} 已成功取消`);
+    }
+}
+
+// 归档会议
+function archiveMeeting(meetingId) {
+    // 找到对应的会议
+    const meetingIndex = meetings.findIndex(m => m.id === parseInt(meetingId));
+    if (meetingIndex !== -1) {
+        // 更新会议状态
+        meetings[meetingIndex].status = 'archived';
+        const updatedMeeting = meetings[meetingIndex];
+        
+        // 更新界面
+        updateMeetingTopBar(updatedMeeting);
+        if (currentPage === 'meeting-detail') {
+            showMeetingDetail(parseInt(meetingId));
+        } else if (currentPage === 'meeting-detail-tab') {
+            showMeetingDetailTab(parseInt(meetingId));
+        }
+        
+        // 显示成功提示
+        alert(`会议 ${meetingId} 已成功归档`);
+    }
+}
+
+// 删除会议
+function deleteMeeting(meetingId) {
+    // 找到对应的会议
+    const meetingIndex = meetings.findIndex(m => m.id === parseInt(meetingId));
+    if (meetingIndex !== -1) {
+        // 删除会议
+        meetings.splice(meetingIndex, 1);
+        
+        // 更新界面
+        renderMeetings();
+        
+        // 显示成功提示
+        alert(`会议 ${meetingId} 已成功删除`);
+        
+        // 返回到会议列表页面
+        showPage('meetings');
+    }
 }
 
 // 平滑滚动到指定区域
@@ -940,10 +1219,37 @@ function showMeetingDetailTab(meetingId) {
         endTime: meetingId === 1 ? '2025-12-18T11:30:00' : '2025-12-19T16:00:00',
         organizer: { name: meetingId === 1 ? '张三' : '李四', email: meetingId === 1 ? 'zhangsan@example.com' : 'lisi@example.com' },
         host: { name: meetingId === 1 ? '张三' : '李四', email: meetingId === 1 ? 'zhangsan@example.com' : 'lisi@example.com' },
-        负责人: { name: meetingId === 1 ? '李四' : '张三', email: meetingId === 1 ? 'lisi@example.com' : 'zhangsan@example.com' },
         attendees: [
-            { user: { _id: '3', name: '王五', email: 'wangwu@example.com' }, status: 'accepted', attended: false },
-            { user: { _id: '4', name: '赵六', email: 'zhaoliu@example.com' }, status: 'pending', attended: false }
+            { user: { _id: '3', name: '王五', email: 'wangwu@example.com' }, status: 'accepted', attended: true },
+            { user: { _id: '4', name: '赵六', email: 'zhaoliu@example.com' }, status: 'pending', attended: false },
+            { user: { _id: '5', name: '孙七', email: 'sunqi@example.com' }, status: 'accepted', attended: true },
+            { user: { _id: '6', name: '周八', email: 'zhouba@example.com' }, status: 'accepted', attended: true }
+        ],
+        resolutions: [
+            {
+                id: 1,
+                content: '项目启动会议决议：同意项目进入开发阶段',
+                time: '2025-12-18T11:30:00',
+                creator: '张三',
+                attendeeStatus: [
+                    { userId: '3', name: '王五', email: 'wangwu@example.com', status: '同意' },
+                    { userId: '4', name: '赵六', email: 'zhaoliu@example.com', status: '未表态' },
+                    { userId: '5', name: '孙七', email: 'sunqi@example.com', status: '同意' },
+                    { userId: '6', name: '周八', email: 'zhouba@example.com', status: '弃权' }
+                ]
+            },
+            {
+                id: 2,
+                content: '需求评审会议决议：通过需求文档，同意进入设计阶段',
+                time: '2025-12-19T16:00:00',
+                creator: '李四',
+                attendeeStatus: [
+                    { userId: '3', name: '王五', email: 'wangwu@example.com', status: '不同意' },
+                    { userId: '4', name: '赵六', email: 'zhaoliu@example.com', status: '未表态' },
+                    { userId: '5', name: '孙七', email: 'sunqi@example.com', status: '同意' },
+                    { userId: '6', name: '周八', email: 'zhouba@example.com', status: '同意' }
+                ]
+            }
         ],
         agenda: [
             {
@@ -975,6 +1281,36 @@ function showMeetingDetailTab(meetingId) {
         recordingUrl: ''
     };
     
+    // 根据会议状态生成操作按钮
+    let meetingActions = '';
+    if (mockMeeting.status === 'not_started') {
+        meetingActions = `
+            <div class="meeting-actions" style="margin-top: 1rem;">
+                <button class="button" onclick="startMeeting(${meetingId})">开始会议</button>
+                <button class="button secondary" onclick="cancelMeeting(${meetingId})">取消会议</button>
+            </div>
+        `;
+    } else if (mockMeeting.status === 'in_progress') {
+        meetingActions = `
+            <div class="meeting-actions" style="margin-top: 1rem;">
+                <button class="button" onclick="endMeeting(${meetingId})">结束会议</button>
+                <button class="button secondary" onclick="checkIn(${meetingId})">签到</button>
+            </div>
+        `;
+    } else if (mockMeeting.status === 'ended') {
+        meetingActions = `
+            <div class="meeting-actions" style="margin-top: 1rem;">
+                <button class="button secondary" onclick="archiveMeeting(${meetingId})">归档会议</button>
+            </div>
+        `;
+    } else if (mockMeeting.status === 'cancelled') {
+        meetingActions = `
+            <div class="meeting-actions" style="margin-top: 1rem;">
+                <button class="button secondary" onclick="deleteMeeting(${meetingId})">删除会议</button>
+            </div>
+        `;
+    }
+    
     // 生成会议基本信息HTML
     const basicInfoHtml = `
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
@@ -998,7 +1334,12 @@ function showMeetingDetailTab(meetingId) {
                 <p style="color: #666; margin-bottom: 0.25rem;">主持人</p>
                 <p>${mockMeeting.host.name}</p>
             </div>
+            <div>
+                <p style="color: #666; margin-bottom: 0.25rem;">会议状态</p>
+                <span class="status-tag ${mockMeeting.status}">${getMeetingStatusInfo(mockMeeting.status).text}</span>
+            </div>
         </div>
+        ${meetingActions}
     `;
     
     // 生成参会人列表HTML
@@ -1092,6 +1433,44 @@ ${mockMeeting.notes}
         </div>
     `;
     
+    // 生成会议决议HTML
+    const resolutionsHtml = `
+        ${mockMeeting.resolutions.map(resolution => `
+            <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #fafafa; border-radius: 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <p style="color: #333; margin: 0; font-weight: 500; font-size: 1.1rem;">${resolution.content}</p>
+                    <span style="color: #1890ff; font-size: 0.8rem;">${new Date(resolution.time).toLocaleString()}</span>
+                </div>
+                <p style="color: #666; margin: 0.5rem 0 1.5rem 0; font-size: 0.8rem;">创建人: ${resolution.creator}</p>
+                
+                <h4 style="margin: 0 0 1rem 0;">参会人决议状态</h4>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #e8e8e8;">
+                                <th style="text-align: left; padding: 0.5rem;">姓名</th>
+                                <th style="text-align: left; padding: 0.5rem;">决议状态</th>
+                                <th style="text-align: left; padding: 0.5rem;">决议说明</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${resolution.attendeeStatus.map(status => `
+                                <tr style="border-bottom: 1px solid #f0f0f0;">
+                                    <td style="padding: 0.5rem;">${status.name}</td>
+                                    <td style="padding: 0.5rem;">
+                                        <span style="background-color: ${status.status === '同意' ? '#f6ffed' : status.status === '不同意' ? '#fff2f0' : status.status === '弃权' ? '#f9f0ff' : '#fffbe6'}; color: ${status.status === '同意' ? '#52c41a' : status.status === '不同意' ? '#ff4d4f' : status.status === '弃权' ? '#722ed1' : '#faad14'}; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">
+                                            ${status.status}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 0.5rem; color: #666;">${status.description || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+            </div>
+        `).join('')}
+        <button class="button secondary">添加决议</button>
+    `;
+    
     // 更新会议标题
     const meetingTitle = document.querySelector('#meeting-detail-tab .meeting-title');
     if (meetingTitle) {
@@ -1111,6 +1490,7 @@ ${mockMeeting.notes}
     const agendaSection = document.getElementById('agenda-section-tab');
     const minutesSection = document.getElementById('minutes-section-tab');
     const attachmentsSection = document.getElementById('attachments-section-tab');
+    const resolutionsSection = document.getElementById('resolutions-section-tab');
     
     if (basicInfoSection) {
         const basicInfoCard = basicInfoSection.querySelector('.card');
@@ -1150,6 +1530,11 @@ ${mockMeeting.notes}
             const title = attachmentsCard.querySelector('h3');
             attachmentsCard.innerHTML = title ? `${title.outerHTML}${attachmentsHtml}` : `<h3>会议附件</h3>${attachmentsHtml}`;
         }
+    }
+    
+    if (resolutionsSection) {
+        // 直接设置resolutionsSection的innerHTML，包含会议决议和添加决议按钮
+        resolutionsSection.innerHTML = `<h3>会议决议</h3>${resolutionsHtml}`;
     }
     
     // 显示会议详情页面
